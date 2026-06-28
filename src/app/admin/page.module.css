@@ -1,0 +1,268 @@
+.adminContainer {
+  max-width: 800px;
+  margin: 4rem auto 6rem;
+  padding: 0 2rem;
+  position: relative;
+  z-index: 5;
+}
+
+.adminTitle {
+  font-size: 2.2rem;
+  font-weight: 300;
+  letter-spacing: 0.1em;
+  margin-bottom: 2.5rem;
+  text-align: center;
+  opacity: 0.85;
+}
+
+/* Elegant physical paper card backing to block background watermarks */
+.glassCard {
+  background: rgba(15, 12, 10, 0.65); /* Dark theme glassmorphic container */
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 6px;
+  padding: 3rem;
+  box-shadow: 0 30px 65px rgba(0, 0, 0, 0.55);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  transition: background 1s ease, border-color 1s ease;
+}
+
+/* Form Layout */
+.uploadForm {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.settingsRow {
+  display: flex;
+  gap: 2.5rem;
+  border-bottom: 1px solid var(--border-color);
+  padding-bottom: 1.5rem;
+}
+
+.checkboxGroup {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  cursor: pointer;
+  font-size: 1.2rem;
+  font-weight: 400;
+  letter-spacing: 0.1em;
+  opacity: 0.6;
+  transition: opacity 0.3s ease;
+}
+
+.checkboxGroup:hover {
+  opacity: 0.9;
+}
+
+.checkboxGroup input {
+  accent-color: var(--primary);
+  width: 16px;
+  height: 16px;
+}
+
+.formGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.formGroup label {
+  font-size: 1.1rem;
+  font-weight: 500;
+  letter-spacing: 0.15em;
+  opacity: 0.45;
+}
+
+.formGroup input[type="text"],
+.formGroup input[type="password"],
+.formGroup textarea {
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid var(--border-color);
+  padding: 0.6rem 0;
+  color: var(--text-color);
+  font-family: var(--font-family);
+  font-size: 1.4rem;
+  font-weight: 300;
+  transition: border-color 0.3s ease;
+}
+
+.formGroup input[type="text"]:focus,
+.formGroup input[type="password"]:focus,
+.formGroup textarea:focus {
+  outline: none;
+  border-color: var(--text-color);
+}
+
+/* Collapsible Compartment */
+.collapsibleSection {
+  max-height: 500px;
+  opacity: 1;
+  overflow: hidden;
+  transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.collapsibleSection.collapsed {
+  max-height: 0;
+  opacity: 0;
+  pointer-events: none;
+  gap: 0;
+}
+
+/* Simple Uploader box */
+.fileInputBox {
+  border: 1px dashed var(--border-color);
+  border-radius: 4px;
+  padding: 1.5rem;
+  text-align: center;
+  cursor: pointer;
+  font-size: 1.2rem;
+  font-weight: 300;
+  color: var(--text-color);
+  opacity: 0.5;
+  transition: all 0.3s ease;
+}
+
+.fileInputBox:hover {
+  opacity: 0.9;
+  border-color: var(--text-color);
+}
+
+.fileSelectedText {
+  color: var(--primary);
+  font-weight: 500;
+}
+
+/* Action button */
+.btn {
+  background: none;
+  border: 1px solid var(--text-color);
+  color: var(--text-color);
+  font-family: var(--font-family);
+  font-size: 1.25rem;
+  font-weight: 400;
+  letter-spacing: 0.15em;
+  padding: 0.9rem;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-top: 1rem;
+}
+
+.btn:hover {
+  background: var(--text-color);
+  color: var(--bg-color);
+}
+
+/* Progress and Results */
+.progressContainer {
+  width: 100%;
+  height: 2px;
+  background: rgba(255, 255, 255, 0.08);
+  display: none;
+  margin-top: 1rem;
+}
+
+.progressContainer.show {
+  display: block;
+}
+
+.progressBar {
+  height: 100%;
+  width: 0%;
+  background: var(--text-color);
+  transition: width 0.1s linear;
+}
+
+.resultBox {
+  border: 1px dashed var(--border-color);
+  padding: 1.5rem;
+  border-radius: 4px;
+  display: none;
+  flex-direction: column;
+  gap: 1rem;
+  animation: fadeInUp 0.4s ease-out forwards;
+}
+
+.resultBox.show {
+  display: flex;
+}
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(5px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.resultBox h3 {
+  font-size: 1.2rem;
+  font-weight: 400;
+  letter-spacing: 0.1em;
+}
+
+.resultBox p {
+  font-size: 1.15rem;
+  opacity: 0.6;
+  line-height: 1.5;
+}
+
+.linkRow {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.linkInput {
+  flex: 1;
+  background: transparent;
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  padding: 0.6rem;
+  color: var(--text-color);
+  font-family: monospace;
+  font-size: 1rem;
+}
+
+/* Copy text button */
+.copyBtn {
+  background: none;
+  border: 1px solid var(--border-color);
+  color: var(--text-color);
+  padding: 0 1rem;
+  border-radius: 4px;
+  font-family: var(--font-family);
+  font-size: 1.1rem;
+  font-weight: 400;
+  letter-spacing: 0.1em;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.copyBtn:hover {
+  border-color: var(--text-color);
+}
+
+/* Toast */
+.toast {
+  position: fixed;
+  bottom: 2rem;
+  left: 50%;
+  transform: translate(-50%, calc(100% + 4rem)); /* Completely push off-screen below viewport */
+  background: var(--text-color);
+  color: var(--bg-color);
+  padding: 0.8rem 1.6rem;
+  border-radius: 4px;
+  font-size: 1.1rem;
+  letter-spacing: 0.15em;
+  transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  z-index: 2000;
+}
+
+.toast.show {
+  transform: translate(-50%, 0);
+}

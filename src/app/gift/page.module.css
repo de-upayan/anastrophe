@@ -1,0 +1,373 @@
+.pageWrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh; /* Fill entire viewport */
+  width: 100%;
+  position: fixed; /* Lock to viewport to prevent page scrolling */
+  top: 0;
+  left: 0;
+  z-index: 5; /* Render below nav bar */
+  overflow: hidden;
+  background: transparent; /* Let global body background & mandalas show through */
+  color: var(--theme-text-color); /* Active theme text color */
+  transition: background 1s ease, color 1s ease;
+}
+
+
+
+.artContainer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  padding: 2rem;
+  z-index: 5;
+  flex-shrink: 0;
+}
+
+.topSpacer {
+  flex: 1;
+  width: 100%;
+  pointer-events: none;
+}
+
+.bottomSection {
+  flex: 1;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 1.6s ease 0.6s;
+  z-index: 10;
+}
+
+.bottomSection.revealed {
+  opacity: 1;
+}
+
+.flipContainer {
+  width: min(88vw, 72vh, 540px); /* Larger card view, safe height limit */
+  height: min(88vw, 72vh, 540px);
+  perspective: 1500px; /* Establishes 3D perspective space */
+  opacity: 0;
+  transform: translateY(15px); /* Clean, minimal slide-up start */
+  transition: transform 0.8s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.8s ease-out;
+  z-index: 5;
+}
+
+.flipContainer.revealed {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.flipCardInner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  transition: transform 1.3s cubic-bezier(0.25, 1, 0.5, 1);
+  transform-style: preserve-3d; /* Mandates children maintain 3D rendering */
+}
+
+.flipCardInner.flipped {
+  transform: rotateY(180deg);
+}
+
+.cardFront,
+.cardBack {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden; /* Hides back face during spin */
+  border-radius: 28px; /* Extra round, organic corner radius */
+  border: none; /* Removed border */
+  background: var(--theme-card-bg); /* Dynamic theme card background */
+  box-shadow: 0 25px 65px rgba(0, 0, 0, 0.25);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  transition: background 1s ease;
+}
+
+.cardFront {
+  padding: 3rem;
+  z-index: 2;
+}
+
+.cardBack {
+  transform: rotateY(180deg); /* Render inverted, correct on flip */
+  z-index: 1;
+  padding: 1.8rem;
+  transform-style: preserve-3d;
+}
+
+.ambigramImg {
+  width: 80%;
+  height: 80%;
+  object-fit: contain;
+  cursor: pointer;
+  user-select: none;
+  transition: transform 1.4s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+.ambigramImg.rotated {
+  transform: rotate(180deg);
+}
+
+.rotateHint {
+  position: absolute;
+  bottom: 1.2rem;
+  font-size: 0.9rem;
+  font-weight: 400;
+  letter-spacing: 0.1em;
+  color: #2b2622;
+  opacity: 0.55;
+  pointer-events: none;
+}
+
+/* Ultra-Minimalist Utility Controls */
+.artControls {
+  display: flex;
+  align-items: center;
+  gap: 0;
+}
+
+.controlLink {
+  background: none;
+  border: none;
+  color: var(--theme-text-color);
+  font-family: var(--font-family);
+  font-size: 1.15rem;
+  font-weight: 300;
+  letter-spacing: 0.15em;
+  cursor: pointer;
+  opacity: 0.4;
+  transition: opacity 0.3s ease, color 0.3s ease;
+  padding: 0.5rem 1rem;
+  width: 17rem; /* Fixed width to prevent shifting when text flips */
+  white-space: nowrap; /* Prevent vertical wrapping */
+}
+
+.linkLeft {
+  text-align: right;
+}
+
+.linkRight {
+  text-align: left;
+}
+
+.controlDivider {
+  color: var(--theme-text-color);
+  opacity: 0.25;
+  font-size: 1.15rem;
+  pointer-events: none;
+  user-select: none;
+  margin: 0 0.5rem;
+}
+
+.controlLink:hover {
+  opacity: 0.9;
+  color: #ffffff;
+}
+
+/* Premium Gift Intro Overlay */
+.giftOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, rgba(0, 0, 0, 0.99) 0%, var(--theme-bg-dark) 100%);
+  z-index: 500;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 1.2s cubic-bezier(0.25, 1, 0.5, 1), visibility 1.2s;
+}
+
+.giftOverlay.hidden {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.giftBox {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2.2rem;
+  max-width: 420px;
+  width: 90%;
+}
+
+.giftSeal {
+  width: 50px;
+  height: 50px;
+  border: 1px solid var(--theme-text-color);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0.25;
+  margin-bottom: 0.5rem;
+  position: relative;
+}
+
+.giftSeal::after {
+  content: '';
+  width: 26px;
+  height: 26px;
+  border: 1px solid var(--theme-text-color);
+  transform: rotate(45deg);
+  position: absolute;
+}
+
+.giftTitle {
+  font-size: 1.6rem;
+  font-weight: 300;
+  letter-spacing: 0.15em;
+  color: var(--theme-text-color);
+  opacity: 0.8;
+  line-height: 1.4;
+}
+
+.giftSubtitle {
+  font-size: 1.15rem;
+  font-weight: 300;
+  letter-spacing: 0.12em;
+  color: var(--theme-text-color);
+  opacity: 0.45;
+  margin-top: -1rem;
+}
+
+.revealBtn {
+  background: none;
+  border: 1px solid var(--theme-text-color);
+  color: var(--theme-text-color);
+  font-family: var(--font-family);
+  font-size: 1.15rem;
+  font-weight: 400;
+  letter-spacing: 0.2em;
+  padding: 0.9rem 2.6rem;
+  border-radius: 4px;
+  cursor: pointer;
+  opacity: 0.7;
+  transition: all 0.4s ease;
+  margin-top: 1rem;
+}
+
+.revealBtn:hover {
+  opacity: 1;
+  background: var(--theme-text-color);
+  color: #16120e;
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+}
+
+.videoPlayer {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  outline: none;
+  background: #000000;
+  border: 1px solid rgba(43, 38, 34, 0.1);
+  border-radius: 18px; /* Proportional video player radius */
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+}
+
+/* Minimalist Password Prompt Modal */
+.passwordOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(13, 10, 9, 0.98); /* Deep dark semi-transparent overlay */
+  z-index: 300;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.4s cubic-bezier(0.25, 1, 0.5, 1), visibility 0.4s;
+}
+
+.passwordOverlay.show {
+  opacity: 1;
+  visibility: visible;
+}
+
+.passwordForm {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
+  width: 90%;
+  max-width: 320px;
+}
+
+.passwordForm label {
+  font-size: 1.05rem;
+  font-weight: 400;
+  letter-spacing: 0.15em;
+  opacity: 0.5;
+}
+
+.passwordInput {
+  background: none;
+  border: none;
+  border-bottom: 1px solid rgba(229, 218, 201, 0.2);
+  width: 100%;
+  padding: 0.8rem;
+  color: var(--theme-text-color);
+  font-family: var(--font-family);
+  font-size: 1.5rem;
+  text-align: center;
+  transition: border-color 0.4s ease;
+}
+
+.passwordInput:focus {
+  outline: none;
+  border-color: var(--theme-text-color);
+}
+
+.errorMsg {
+  color: #b54f4f;
+  font-size: 1rem;
+  letter-spacing: 0.05em;
+  display: none;
+}
+
+.passwordActions {
+  display: flex;
+  gap: 2rem;
+  margin-top: 1rem;
+}
+
+.toast {
+  position: fixed;
+  bottom: 2rem;
+  left: 50%;
+  transform: translate(-50%, calc(100% + 4rem)); /* Completely push off-screen below viewport */
+  background: var(--text-color);
+  color: var(--bg-color);
+  padding: 0.8rem 1.6rem;
+  border-radius: 4px;
+  font-size: 1.1rem;
+  letter-spacing: 0.15em;
+  transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  z-index: 1000;
+}
+
+.toast.show {
+  transform: translate(-50%, 0);
+}
+
+

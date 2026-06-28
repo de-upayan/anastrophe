@@ -1,0 +1,27 @@
+.mockupNav {
+  display: flex;
+  justify-content: center;
+  gap: 2rem;
+  padding: 2rem 0;
+  border-bottom: 1px solid var(--border-color);
+  max-width: 600px;
+  margin: 0 auto;
+  position: relative;
+  z-index: 10;
+}
+
+.mockupNav a {
+  color: var(--text-color);
+  text-decoration: none;
+  font-size: 1.15rem;
+  font-weight: 500;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  opacity: 0.3;
+  transition: opacity 0.3s ease;
+}
+
+.mockupNav a:hover,
+.mockupNav a.active {
+  opacity: 0.8;
+}
