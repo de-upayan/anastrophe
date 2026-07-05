@@ -14,6 +14,7 @@ export default function AdminPage() {
   const [selectedGiftFilter, setSelectedGiftFilter] = useState('all');
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
   const [visiblePasswords, setVisiblePasswords] = useState<Record<string, boolean>>({});
+  const [passwordType, setPasswordType] = useState<'password' | 'passphrase'>('password');
 
   const togglePasswordVisibility = (id: string) => {
     setVisiblePasswords(prev => ({
@@ -178,6 +179,32 @@ export default function AdminPage() {
       clearInterval(progressInterval);
       setIsUploading(false);
       showToast(err.message || 'Connection error during upload');
+    }
+  };
+
+  const handleGenerateRandomPassword = () => {
+    if (passwordType === 'password') {
+      const chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+      let pass = '';
+      for (let i = 0; i < 8; i++) {
+        pass += chars.charAt(Math.floor(Math.random() * chars.length));
+      }
+      setPassword(pass);
+      showToast('Random password generated');
+    } else {
+      const words = [
+        'calligraphy', 'ink', 'paper', 'nib', 'canvas', 
+        'symmetry', 'mirror', 'rotation', 'ambigram', 'design', 
+        'classic', 'vintage', 'modern', 'fluid', 'brush', 
+        'lettering', 'artist', 'creative', 'stroke', 'swash', 
+        'flourish', 'geometric', 'curved', 'smooth', 'contrast'
+      ];
+      // Pick 3 random words
+      const w1 = words[Math.floor(Math.random() * words.length)];
+      const w2 = words[Math.floor(Math.random() * words.length)];
+      const w3 = words[Math.floor(Math.random() * words.length)];
+      setPassword(`${w1}-${w2}-${w3}`);
+      showToast('Random passphrase generated');
     }
   };
 
@@ -628,13 +655,48 @@ export default function AdminPage() {
 
                 <div className={styles.formGroup}>
                   <label htmlFor="password">Download password (optional)</label>
-                  <input 
-                    type="password" 
-                    id="password" 
-                    placeholder="••••••••" 
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                  />
+                  <div className={styles.passwordInputWrapper}>
+                    <input 
+                      type="text" 
+                      id="password" 
+                      placeholder={passwordType === 'password' ? "e.g. secret123" : "e.g. nib-flourish-mirror"} 
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                    />
+                    <div className={styles.verticalToggle}>
+                      <button 
+                        type="button" 
+                        className={`${styles.vertToggleBtn} ${passwordType === 'password' ? styles.vertToggleActive : ''}`}
+                        onClick={() => setPasswordType('password')}
+                        title="Characters"
+                      >
+                        Code
+                      </button>
+                      <button 
+                        type="button" 
+                        className={`${styles.vertToggleBtn} ${passwordType === 'passphrase' ? styles.vertToggleActive : ''}`}
+                        onClick={() => setPasswordType('passphrase')}
+                        title="Words"
+                      >
+                        Word
+                      </button>
+                    </div>
+                    <button 
+                      type="button" 
+                      className={styles.diceBtn} 
+                      onClick={handleGenerateRandomPassword}
+                      title="Generate Random"
+                    >
+                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                        <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                        <circle cx="8.5" cy="8.5" r="1.5" fill="currentColor"></circle>
+                        <circle cx="15.5" cy="15.5" r="1.5" fill="currentColor"></circle>
+                        <circle cx="12" cy="12" r="1.5" fill="currentColor"></circle>
+                        <circle cx="8.5" cy="15.5" r="1.5" fill="currentColor"></circle>
+                        <circle cx="15.5" cy="8.5" r="1.5" fill="currentColor"></circle>
+                      </svg>
+                    </button>
+                  </div>
                 </div>
 
                 <div className={styles.formGroup}>

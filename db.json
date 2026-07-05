@@ -8,7 +8,7 @@
     "timelapseSrc": "/art/symmetry_timelapse.mp4",
     "password": "secret123",
     "createdAt": "2026-07-01T10:22:14.000Z",
-    "views": 22,
+    "views": 39,
     "downloads": 3,
     "viewsLog": [
       {
@@ -97,6 +97,74 @@
       },
       {
         "timestamp": "2026-07-05T18:06:58.782Z",
+        "viewerId": "eff8e7ca506627fe"
+      },
+      {
+        "timestamp": "2026-07-05T18:08:30.773Z",
+        "viewerId": "eff8e7ca506627fe"
+      },
+      {
+        "timestamp": "2026-07-05T18:08:30.781Z",
+        "viewerId": "eff8e7ca506627fe"
+      },
+      {
+        "timestamp": "2026-07-05T18:08:43.378Z",
+        "viewerId": "eff8e7ca506627fe"
+      },
+      {
+        "timestamp": "2026-07-05T18:09:44.704Z",
+        "viewerId": "eff8e7ca506627fe"
+      },
+      {
+        "timestamp": "2026-07-05T18:09:44.774Z",
+        "viewerId": "eff8e7ca506627fe"
+      },
+      {
+        "timestamp": "2026-07-05T18:10:53.294Z",
+        "viewerId": "eff8e7ca506627fe"
+      },
+      {
+        "timestamp": "2026-07-05T18:11:19.102Z",
+        "viewerId": "eff8e7ca506627fe"
+      },
+      {
+        "timestamp": "2026-07-05T18:12:06.285Z",
+        "viewerId": "eff8e7ca506627fe"
+      },
+      {
+        "timestamp": "2026-07-05T18:12:16.591Z",
+        "viewerId": "eff8e7ca506627fe"
+      },
+      {
+        "timestamp": "2026-07-05T18:12:50.735Z",
+        "viewerId": "eff8e7ca506627fe"
+      },
+      {
+        "timestamp": "2026-07-05T18:13:17.803Z",
+        "viewerId": "eff8e7ca506627fe"
+      },
+      {
+        "timestamp": "2026-07-05T18:13:17.825Z",
+        "viewerId": "eff8e7ca506627fe"
+      },
+      {
+        "timestamp": "2026-07-05T18:13:23.690Z",
+        "viewerId": "eff8e7ca506627fe"
+      },
+      {
+        "timestamp": "2026-07-05T18:13:23.851Z",
+        "viewerId": "eff8e7ca506627fe"
+      },
+      {
+        "timestamp": "2026-07-05T18:13:50.389Z",
+        "viewerId": "eff8e7ca506627fe"
+      },
+      {
+        "timestamp": "2026-07-05T18:13:50.401Z",
+        "viewerId": "eff8e7ca506627fe"
+      },
+      {
+        "timestamp": "2026-07-05T18:14:02.792Z",
         "viewerId": "eff8e7ca506627fe"
       }
     ],

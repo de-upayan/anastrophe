@@ -3,13 +3,14 @@
 import React, { useState, useEffect, useRef, Suspense, use } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { useTheme } from '@/context/ThemeContext';
-import { Meddon, Eagle_Lake } from 'next/font/google';
+import { Meddon, Eagle_Lake, Fredericka_the_Great } from 'next/font/google';
 import AnimatedLogo from '@/components/AnimatedLogo';
 import { AmbigramItem, DEFAULT_ITEMS } from '@/lib/types';
 import styles from './page.module.css';
 
 const meddon = Meddon({ weight: '400', subsets: ['latin'] });
 const eagleLake = Eagle_Lake({ weight: '400', subsets: ['latin'] });
+const fredericka = Fredericka_the_Great({ weight: '400', subsets: ['latin'] });
 
 function GiftPageContent({ artId }: { artId: string }) {
   const searchParams = useSearchParams();
@@ -290,7 +291,7 @@ function GiftPageContent({ artId }: { artId: string }) {
         <div className={`${styles.giftOverlay} ${isGiftOpen ? styles.hidden : ''}`}>
           <div className={styles.contentWrapper} style={{ position: 'relative', zIndex: 2 }}>
             <h1 className={styles.introText}>
-              <span className={`${styles.scriptText} ${showHi ? styles.show : ''} ${meddon.className}`}>
+              <span className={`${styles.scriptText} ${showHi ? styles.show : ''} ${fredericka.className} ${styles.hiGreeting}`}>
                 Hi!
               </span>
               <span className={`${styles.scriptText} ${showIm ? styles.show : ''} ${meddon.className}`}>

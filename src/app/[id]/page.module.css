@@ -263,6 +263,11 @@
   transform: translateY(0);
 }
 
+.hiGreeting {
+  font-size: 3rem;
+  text-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+}
+
 .logoWrapper {
   width: 100%;
   max-width: 1000px; /* Scaled up for extra prominence */
