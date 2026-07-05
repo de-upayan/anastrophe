@@ -137,6 +137,7 @@ function GiftPageContent() {
   const [showICreate, setShowICreate] = useState(false);
   const [isFlipped, setIsFlipped] = useState(false);
   const [showAmbigrams, setShowAmbigrams] = useState(false);
+  const [showProceed, setShowProceed] = useState(false);
   const [isSkipped, setIsSkipped] = useState(false);
   const landingTimersRef = useRef<NodeJS.Timeout[]>([]);
 
@@ -155,26 +156,14 @@ function GiftPageContent() {
           list = DEFAULT_ITEMS;
         }
       } catch (e) {
-        console.error('Failed to load API ambigrams on gift page:', e);
         list = DEFAULT_ITEMS;
       }
-      setItems(list);
 
-      // Pick active art item:
-      // 1. By direct query parameter artId
-      // 2. By matching recipient name
-      // 3. Fallback to first item
-      let chosenItem = list[0];
-      if (artIdParam) {
-        const match = list.find(item => item.id === artIdParam);
-        if (match) chosenItem = match;
-      } else if (recipientParam) {
-        const match = list.find(item => item.recipient?.toLowerCase() === recipientParam.toLowerCase());
-        if (match) chosenItem = match;
-      }
+      // Read current art ID from search param
+      const chosenItem = list.find((item) => item.id === artIdParam) || list[0];
       setActiveItem(chosenItem);
 
-      // Set recipient label
+      // Customize recipient text
       if (recipientParam) {
         setRecipientText(`Specially Crafted for ${recipientParam}`);
       } else if (chosenItem && chosenItem.recipient) {
@@ -214,11 +203,7 @@ function GiftPageContent() {
     setShowICreate(true);
     setIsFlipped(true);
     setShowAmbigrams(true);
-    
-    // Slide out the intro cover instantly
-    setIsGiftOpen(true);
-    setIsRevealed(true);
-    triggerGiftReveal();
+    setShowProceed(true); // Don't slide out automatically, reveal the proceed button instead!
   };
 
   // Play landing intro animation sequentially
@@ -233,12 +218,10 @@ function GiftPageContent() {
       setTimeout(() => setShowICreate(true), 4600),
       setTimeout(() => setIsFlipped(true), 5800),
       setTimeout(() => setShowAmbigrams(true), 8300),
-      // Automatically slide to gift view 1.5 seconds after "ambigrams" fades in
+      // Float in the proceed button after "ambigrams" fades in
       setTimeout(() => {
-        setIsGiftOpen(true);
-        setIsRevealed(true);
-        triggerGiftReveal();
-      }, 9800),
+        setShowProceed(true);
+      }, 9300),
     ];
 
     landingTimersRef.current = timers;
@@ -250,9 +233,13 @@ function GiftPageContent() {
 
   // Listen for user click/keypress to skip the intro animation
   useEffect(() => {
-    if (isGiftOpen) return;
+    if (isGiftOpen || showProceed) return;
 
-    const handleWindowInteraction = () => {
+    const handleWindowInteraction = (e: MouseEvent | KeyboardEvent) => {
+      // Don't skip if the user clicked the proceed link directly
+      if (e.target && (e.target as HTMLElement).closest(`[class*="proceedLink"]`)) {
+        return;
+      }
       handleSkipIntro();
     };
 
@@ -263,7 +250,7 @@ function GiftPageContent() {
       window.removeEventListener('click', handleWindowInteraction);
       window.removeEventListener('keydown', handleWindowInteraction);
     };
-  }, [isGiftOpen, isSkipped]);
+  }, [isGiftOpen, isSkipped, showProceed]);
 
   const toggleRotation = () => {
     setIsRotated(!isRotated);
@@ -280,10 +267,9 @@ function GiftPageContent() {
       setIsTimelapseOpen(true);
       setTimeout(() => {
         if (videoRef.current) {
-          videoRef.current.currentTime = 0;
           videoRef.current.play().catch(() => {});
         }
-      }, 500); // Trigger play midway through the slower 1.3s 3D flip rotation
+      }, 600);
     }
   };
 
@@ -322,7 +308,20 @@ function GiftPageContent() {
     }, 3000);
   };
 
+  const handleOpenGift = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setIsGiftOpen(true);
+  };
+
+  const handleRevealGift = (e?: React.MouseEvent) => {
+    if (e) e.stopPropagation();
+    setIsRevealed(true);
+    triggerGiftReveal();
+  };
+
   if (!activeItem) return null;
+
+  const recipientName = recipientParam || (activeItem && activeItem.recipient) || '';
 
   return (
     <>
@@ -364,6 +363,31 @@ function GiftPageContent() {
               </span>
             </p>
           </div>
+
+          {/* Vertical Proceed Arrow Button on the right to enter the gift page */}
+          <button 
+            className={`${styles.proceedLink} ${showProceed ? styles.show : ''}`} 
+            onClick={handleOpenGift}
+            title="Open Your Ambigram Gift"
+          >
+            <span className={styles.proceedText}>Open Gift</span>
+            <div className={styles.proceedCircle}>
+              <svg 
+                className={styles.arrowSvg} 
+                width="20" 
+                height="20" 
+                viewBox="0 0 24 24" 
+                fill="none" 
+                stroke="currentColor" 
+                strokeWidth="1.5" 
+                strokeLinecap="round" 
+                strokeLinejoin="round"
+              >
+                <line x1="5" y1="12" x2="19" y2="12"></line>
+                <polyline points="12 5 19 12 12 19"></polyline>
+              </svg>
+            </div>
+          </button>
         </div>
 
         {/* Top Spacer to balance vertical centering */}
@@ -371,22 +395,51 @@ function GiftPageContent() {
 
         {/* The centerpiece 3D Flip Card */}
         <main className={styles.artContainer}>
-          <h2 className={`${styles.giftHeader} ${isRevealed ? styles.show : ''} ${meddon.className}`}>
-            Here&apos;s one for you
+          <h2 className={`${styles.giftHeader} ${isGiftOpen ? styles.show : ''} ${meddon.className}`}>
+            Here&apos;s one for you{recipientName ? ', ' : ''}
+            {recipientName && (
+              <span className={`${styles.headerRecipient} ${eagleLake.className}`}>
+                {recipientName}
+              </span>
+            )}
           </h2>
-          <div className={`${styles.flipContainer} ${isRevealed ? styles.revealed : ''}`}>
+          <div className={`${styles.flipContainer} ${isGiftOpen ? styles.show : ''} ${isRevealed ? styles.revealed : ''}`}>
             <div className={`${styles.flipCardInner} ${isTimelapseOpen ? styles.flipped : ''}`}>
               
-              {/* Front Side: SVG Ambigram Artwork */}
+              {/* Front Side: SVG Ambigram Artwork OR Sealed Mystery State */}
               <div className={styles.cardFront}>
-                <img 
-                  src={activeItem.imageSrc} 
-                  alt="Ambigram Artwork" 
-                  className={`${styles.ambigramImg} ${isRotated ? styles.rotated : ''}`} 
-                  onClick={toggleRotation}
-                  title="Click design to rotate 180°"
-                />
-                <div className={styles.rotateHint}>Click design to rotate 180°</div>
+                {!isRevealed ? (
+                  <div className={styles.mysteryState} onClick={() => handleRevealGift()}>
+                    <div className={styles.mysteryIcon}>
+                      <div className={styles.mysteryMandala}></div>
+                      <div className={styles.mysteryLogo}>?</div>
+                    </div>
+                    <h3 className={`${styles.mysteryTitle} ${meddon.className}`}>
+                      {recipientParam || activeItem.recipient || 'For You'}
+                    </h3>
+                    <p className={styles.mysterySub}>Click card or button to unseal design</p>
+                    <button 
+                      className={styles.revealButton} 
+                      onClick={(e) => { 
+                        e.stopPropagation(); 
+                        handleRevealGift(); 
+                      }}
+                    >
+                      Reveal Design
+                    </button>
+                  </div>
+                ) : (
+                  <>
+                    <img 
+                      src={activeItem.imageSrc} 
+                      alt="Ambigram Artwork" 
+                      className={`${styles.ambigramImg} ${isRotated ? styles.rotated : ''}`} 
+                      onClick={toggleRotation}
+                      title="Click design to rotate 180°"
+                    />
+                    <div className={styles.rotateHint}>Click design to rotate 180°</div>
+                  </>
+                )}
               </div>
 
               {/* Back Side: Embedded MP4 Timelapse Video */}
