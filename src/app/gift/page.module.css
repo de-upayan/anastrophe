@@ -73,8 +73,21 @@
   transform-style: preserve-3d; /* Mandates children maintain 3D rendering */
 }
 
-.flipCardInner.flipped {
-  transform: rotateY(180deg);
+/* 3D Dual-Axis Card State Rotations */
+.stateSealed {
+  transform: rotateX(0deg) rotateY(0deg);
+}
+
+.stateArtwork {
+  transform: rotateX(180deg) rotateY(0deg);
+}
+
+.stateArtwork.cardRotated {
+  transform: rotateX(180deg) rotateY(0deg) rotateZ(180deg);
+}
+
+.stateTimelapse {
+  transform: rotateX(180deg) rotateY(180deg);
 }
 
 .cardFront,
@@ -103,11 +116,19 @@
   z-index: 2;
 }
 
+.cardFront.videoMode {
+  padding: 1.8rem; /* Matches cardBack padding for video display */
+}
+
 .cardBack {
-  transform: rotateY(180deg); /* Render inverted, correct on flip */
+  transform: rotateX(180deg); /* Pre-rotate X by 180deg for vertical flip */
   z-index: 1;
   padding: 1.8rem;
   transform-style: preserve-3d;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
 }
 
 .ambigramImg {
@@ -119,17 +140,25 @@
   transition: transform 1.4s cubic-bezier(0.25, 1, 0.5, 1);
 }
 
-.ambigramImg.rotated {
-  transform: rotate(180deg);
-}
-
-.rotateHint {
+.rotateHintTop {
   position: absolute;
-  bottom: 1.2rem;
+  top: 1.5rem;
   font-size: 0.9rem;
   font-weight: 400;
   letter-spacing: 0.1em;
-  color: #2b2622;
+  color: var(--theme-text-color);
+  opacity: 0.55;
+  pointer-events: none;
+  transform: rotate(180deg); /* Upside down by default so it spins right-side up on rotation */
+}
+
+.rotateHintBottom {
+  position: absolute;
+  bottom: 1.5rem;
+  font-size: 0.9rem;
+  font-weight: 400;
+  letter-spacing: 0.1em;
+  color: var(--theme-text-color);
   opacity: 0.55;
   pointer-events: none;
 }
@@ -270,20 +299,27 @@
 }
 
 .giftHeader {
-  font-size: 2.4rem;
-  text-align: center;
-  color: var(--text-color);
+  display: flex;
+  justify-content: center;
+  align-items: baseline;
+  flex-wrap: wrap;
+  margin-bottom: 2rem;
+  width: 100%;
   opacity: 0;
   transform: translateY(-10px);
   transition: opacity 1.5s cubic-bezier(0.25, 1, 0.5, 1) 0.5s, transform 1.5s cubic-bezier(0.25, 1, 0.5, 1) 0.5s;
-  margin-bottom: 2rem;
-  width: 100%;
-  font-weight: 300;
 }
 
 .giftHeader.show {
-  opacity: 0.65;
+  opacity: 1;
   transform: translateY(0);
+}
+
+.scriptTextPart {
+  font-size: 2.2rem;
+  color: var(--text-color);
+  opacity: 0.55; /* Matches .scriptText.show precisely */
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.15);
 }
 
 .videoPlayer {
@@ -522,6 +558,7 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  gap: 2.5rem; /* Direct vertical spacing between question mark and button */
   padding: 2.5rem;
   background: radial-gradient(circle at center, rgba(var(--theme-bg-rgb), 0.3) 0%, rgba(var(--theme-bg-rgb), 0.15) 100%);
   border-radius: 6px;
@@ -542,7 +579,6 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-bottom: 1.5rem;
 }
 
 .mysteryMandala {
@@ -556,18 +592,17 @@
 
 .mysteryLogo {
   font-family: var(--font-family);
-  font-size: 1.8rem;
+  font-size: 2.6rem; /* Enlarge Question Mark */
   font-weight: 300;
   color: var(--theme-text-color);
-  opacity: 0.35;
+  opacity: 0.3; /* Muted watermark opacity */
   transition: opacity 0.3s ease, transform 0.3s ease;
   z-index: 2;
 }
 
 .mysteryState:hover .mysteryLogo {
-  opacity: 0.8;
-  transform: scale(1.1);
-  color: var(--theme-accent);
+  opacity: 0.3; /* Keep it fully muted on hover */
+  transform: scale(1.05); /* Very subtle scaling */
 }
 
 .mysteryState:hover .mysteryMandala {
@@ -575,48 +610,25 @@
   animation-duration: 15s;
 }
 
-.mysteryTitle {
-  font-size: 2.2rem;
-  font-weight: normal;
-  margin: 0 0 0.5rem 0;
-  color: var(--theme-text-color);
-  opacity: 0.85;
-}
-
-.mysterySub {
-  font-size: 0.82rem;
-  font-weight: 300;
-  letter-spacing: 0.05em;
-  opacity: 0.5;
-  margin: 0 0 2rem 0;
-}
-
 .revealButton {
   background: transparent;
-  border: 1px solid rgba(var(--theme-bg-rgb), 0.3);
-  padding: 0.75rem 2rem;
+  border: 1px solid var(--theme-text-color); /* Solid visible outline by default */
+  padding: 0.85rem 2.2rem;
   border-radius: 4px;
   font-family: var(--font-family);
-  font-size: 0.75rem;
+  font-size: 1rem;
   font-weight: 500;
-  letter-spacing: 0.25em;
-  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  text-transform: none;
   color: var(--theme-text-color);
   cursor: pointer;
-  transition: all 0.4s cubic-bezier(0.25, 1, 0.5, 1);
-  box-shadow: 0 0 0px rgba(var(--theme-bg-rgb), 0);
+  transition: all 0.3s ease;
 }
 
 .revealButton:hover {
   background: var(--theme-text-color);
   color: var(--theme-bg-dark);
-  border-color: var(--theme-text-color);
-  box-shadow: 0 0 15px rgba(var(--theme-bg-rgb), 0.25);
-  transform: translateY(-2px);
-}
-
-.revealButton:active {
-  transform: translateY(0);
+  border-color: var(--theme-text-color); /* Shows border outline color on hover */
 }
 
 @keyframes slowSpin {
@@ -636,12 +648,18 @@
 }
 
 .headerRecipient {
-  font-size: 2.2rem;
-  color: var(--theme-accent); /* Golden/bronze theme accent color */
-  margin-left: 0.5rem;
+  font-size: 2.6rem; /* Matches .ambigramsText precisely */
+  color: var(--text-color);
+  opacity: 0.95; /* Matches .ambigramsText.show precisely */
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.15);
+  margin-left: 0.8rem;
   font-weight: 400;
   display: inline-block;
-  vertical-align: middle;
+}
+
+/* Rotates video player when card is flipped X & Y so it remains upright */
+.stateTimelapse .videoPlayer {
+  transform: rotate(180deg);
 }
 
 

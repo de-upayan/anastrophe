@@ -322,6 +322,11 @@ function GiftPageContent() {
   if (!activeItem) return null;
 
   const recipientName = recipientParam || (activeItem && activeItem.recipient) || '';
+  
+  // Explicit 3D rotation state classes
+  const cardStateClass = !isRevealed 
+    ? styles.stateSealed 
+    : (isTimelapseOpen ? styles.stateTimelapse : styles.stateArtwork);
 
   return (
     <>
@@ -395,8 +400,10 @@ function GiftPageContent() {
 
         {/* The centerpiece 3D Flip Card */}
         <main className={styles.artContainer}>
-          <h2 className={`${styles.giftHeader} ${isGiftOpen ? styles.show : ''} ${meddon.className}`}>
-            Here&apos;s one for you{recipientName ? ', ' : ''}
+          <h2 className={`${styles.giftHeader} ${isGiftOpen ? styles.show : ''}`}>
+            <span className={`${styles.scriptTextPart} ${meddon.className}`}>
+              Here&apos;s one for you{recipientName ? ', ' : ''}
+            </span>
             {recipientName && (
               <span className={`${styles.headerRecipient} ${eagleLake.className}`}>
                 {recipientName}
@@ -404,20 +411,16 @@ function GiftPageContent() {
             )}
           </h2>
           <div className={`${styles.flipContainer} ${isGiftOpen ? styles.show : ''} ${isRevealed ? styles.revealed : ''}`}>
-            <div className={`${styles.flipCardInner} ${isTimelapseOpen ? styles.flipped : ''}`}>
+            <div className={`${styles.flipCardInner} ${cardStateClass} ${isRotated ? styles.cardRotated : ''}`}>
               
-              {/* Front Side: SVG Ambigram Artwork OR Sealed Mystery State */}
-              <div className={styles.cardFront}>
-                {!isRevealed ? (
+              {/* Front Side: Sealed Mystery State OR Video Player once timelapse is open */}
+              <div className={`${styles.cardFront} ${isTimelapseOpen ? styles.videoMode : ''}`}>
+                {!isTimelapseOpen ? (
                   <div className={styles.mysteryState} onClick={() => handleRevealGift()}>
                     <div className={styles.mysteryIcon}>
                       <div className={styles.mysteryMandala}></div>
                       <div className={styles.mysteryLogo}>?</div>
                     </div>
-                    <h3 className={`${styles.mysteryTitle} ${meddon.className}`}>
-                      {recipientParam || activeItem.recipient || 'For You'}
-                    </h3>
-                    <p className={styles.mysterySub}>Click card or button to unseal design</p>
                     <button 
                       className={styles.revealButton} 
                       onClick={(e) => { 
@@ -425,34 +428,35 @@ function GiftPageContent() {
                         handleRevealGift(); 
                       }}
                     >
-                      Reveal Design
+                      Reveal
                     </button>
                   </div>
                 ) : (
-                  <>
-                    <img 
-                      src={activeItem.imageSrc} 
-                      alt="Ambigram Artwork" 
-                      className={`${styles.ambigramImg} ${isRotated ? styles.rotated : ''}`} 
-                      onClick={toggleRotation}
-                      title="Click design to rotate 180°"
-                    />
-                    <div className={styles.rotateHint}>Click design to rotate 180°</div>
-                  </>
+                  <video 
+                    ref={videoRef}
+                    className={styles.videoPlayer} 
+                    loop 
+                    playsInline 
+                    muted
+                  >
+                    <source src={activeItem.timelapseSrc} type="video/mp4" />
+                  </video>
                 )}
               </div>
 
-              {/* Back Side: Embedded MP4 Timelapse Video */}
-              <div className={styles.cardBack}>
-                <video 
-                  ref={videoRef}
-                  className={styles.videoPlayer} 
-                  loop 
-                  playsInline 
-                  controls
-                >
-                  <source src={activeItem.timelapseSrc} type="video/mp4" />
-                </video>
+              {/* Back Side: SVG Ambigram Artwork */}
+              <div className={styles.cardBack} onClick={toggleRotation} title="Click to rotate 180°">
+                {isRevealed && (
+                  <>
+                    <div className={styles.rotateHintTop}>Click design to rotate 180°</div>
+                    <img 
+                      src={activeItem.imageSrc} 
+                      alt="Ambigram Artwork" 
+                      className={styles.ambigramImg}
+                    />
+                    <div className={styles.rotateHintBottom}>Click design to rotate 180°</div>
+                  </>
+                )}
               </div>
 
             </div>
