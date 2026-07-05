@@ -564,22 +564,21 @@
   justify-content: center;
   gap: 2.5rem; /* Direct vertical spacing between question mark and button */
   padding: 2.5rem;
-  background: radial-gradient(circle at center, rgba(var(--theme-bg-rgb), 0.3) 0%, rgba(var(--theme-bg-rgb), 0.15) 100%);
-  border-radius: 6px;
+  background: transparent;
   cursor: pointer;
   box-sizing: border-box;
   text-align: center;
-  transition: background 0.3s ease, border-color 0.3s ease;
+  transition: all 0.3s ease;
 }
 
 .mysteryState:hover {
-  background: radial-gradient(circle at center, rgba(var(--theme-bg-rgb), 0.45) 0%, rgba(var(--theme-bg-rgb), 0.2) 100%);
+  background: transparent;
 }
 
 .mysteryIcon {
   position: relative;
-  width: 90px;
-  height: 90px;
+  width: 120px;
+  height: 120px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -596,22 +595,38 @@
 
 .mysteryLogo {
   font-family: var(--font-family);
-  font-size: 2.6rem; /* Enlarge Question Mark */
+  font-size: 4.5rem; /* Matches size of ! in invalid page */
   font-weight: 300;
   color: var(--theme-text-color);
-  opacity: 0.3; /* Muted watermark opacity */
-  transition: opacity 0.3s ease, transform 0.3s ease;
+  opacity: 0.48; /* Prominent but elegant opacity */
+  transition: opacity 0.3s ease;
   z-index: 2;
 }
 
 .mysteryState:hover .mysteryLogo {
-  opacity: 0.3; /* Keep it fully muted on hover */
-  transform: scale(1.05); /* Very subtle scaling */
+  opacity: 0.7; /* Highlights nicely on hover */
 }
 
 .mysteryState:hover .mysteryMandala {
-  border-color: rgba(var(--theme-bg-rgb), 0.4);
-  animation-duration: 15s;
+  border-color: rgba(var(--theme-bg-rgb), 0.45);
+  animation-duration: 12s; /* Spins faster on hover */
+}
+
+.revealHint {
+  position: absolute;
+  bottom: 2rem;
+  font-size: 0.85rem;
+  font-weight: 500;
+  letter-spacing: 0.15em;
+  color: var(--theme-text-color);
+  opacity: 0.25; /* Soft hint opacity */
+  pointer-events: none;
+  text-transform: none; /* Renders in Title Case: Click to Reveal */
+  transition: opacity 0.3s ease;
+}
+
+.mysteryState:hover .revealHint {
+  opacity: 0.55; /* Brightens when hovering the card */
 }
 
 .revealButton {

@@ -5,6 +5,7 @@ import { useSearchParams } from 'next/navigation';
 import { useTheme } from '@/context/ThemeContext';
 import { Meddon, Eagle_Lake, Fredericka_the_Great } from 'next/font/google';
 import AnimatedLogo from '@/components/AnimatedLogo';
+import IntroScreen from '@/components/IntroScreen';
 import { AmbigramItem, DEFAULT_ITEMS } from '@/lib/types';
 import styles from './page.module.css';
 
@@ -39,18 +40,6 @@ function GiftPageContent({ artId }: { artId: string }) {
   // Toast notifications
   const [toastMessage, setToastMessage] = useState('');
   const [isToastVisible, setIsToastVisible] = useState(false);
-
-  // Landing Intro Animation States
-  const [showHi, setShowHi] = useState(false);
-  const [showIm, setShowIm] = useState(false);
-  const [startDrawing, setStartDrawing] = useState(false);
-  const [isDrawn, setIsDrawn] = useState(false);
-  const [showICreate, setShowICreate] = useState(false);
-  const [isFlipped, setIsFlipped] = useState(false);
-  const [showAmbigrams, setShowAmbigrams] = useState(false);
-  const [showProceed, setShowProceed] = useState(false);
-  const [isSkipped, setIsSkipped] = useState(false);
-  const landingTimersRef = useRef<NodeJS.Timeout[]>([]);
 
   const videoRef = useRef<HTMLVideoElement>(null);
 
@@ -112,63 +101,7 @@ function GiftPageContent({ artId }: { artId: string }) {
     loadActiveGift();
   }, [recipientOverride, artId, searchParams]);
 
-  // Skip / Instant slide out function
-  const handleSkipIntro = () => {
-    setIsSkipped(true);
-    landingTimersRef.current.forEach((t) => clearTimeout(t));
-    setShowHi(true);
-    setShowIm(true);
-    setStartDrawing(true);
-    setIsDrawn(true);
-    setShowICreate(true);
-    setIsFlipped(true);
-    setShowAmbigrams(true);
-    setShowProceed(true);
-  };
 
-  // Play landing intro animation sequentially
-  useEffect(() => {
-    if (isSkipped || isGiftOpen) return;
-
-    const timers = [
-      setTimeout(() => setShowHi(true), 300),
-      setTimeout(() => setShowIm(true), 1300),
-      setTimeout(() => setStartDrawing(true), 1300),
-      setTimeout(() => setIsDrawn(true), 3300),
-      setTimeout(() => setShowICreate(true), 3600),
-      setTimeout(() => setIsFlipped(true), 4800),
-      setTimeout(() => setShowAmbigrams(true), 4800),
-      setTimeout(() => {
-        setShowProceed(true);
-      }, 5800),
-    ];
-
-    landingTimersRef.current = timers;
-
-    return () => {
-      timers.forEach((t) => clearTimeout(t));
-    };
-  }, [isSkipped, isGiftOpen]);
-
-  // Listen for user click/keypress to skip the intro animation
-  useEffect(() => {
-    if (isGiftOpen || showProceed) return;
-
-    const handleWindowInteraction = (e: MouseEvent | KeyboardEvent) => {
-      if (e.target && (e.target as HTMLElement).closest(`[class*="proceedLink"]`)) {
-        return;
-      }
-      handleSkipIntro();
-    };
-
-    window.addEventListener('click', handleWindowInteraction);
-    window.addEventListener('keydown', handleWindowInteraction);
-
-    return () => {
-      window.removeEventListener('click', handleWindowInteraction);
-      window.removeEventListener('keydown', handleWindowInteraction);
-    };
-  }, [isGiftOpen, isSkipped, showProceed]);
 
   const toggleRotation = () => {
     setIsRotated(!isRotated);
@@ -262,15 +195,29 @@ function GiftPageContent({ artId }: { artId: string }) {
         </div>
 
         <main className={styles.artContainer} style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', height: '80vh', zIndex: 5 }}>
-          <div style={{ background: 'rgba(24, 29, 32, 0.9)', border: '1px solid rgba(255, 255, 255, 0.1)', borderRadius: '8px', padding: '3.5rem', maxWidth: '500px', textAlign: 'center', boxShadow: '0 20px 45px rgba(0,0,0,0.3)', backdropFilter: 'blur(12px)', color: '#ffffff' }}>
-            <div style={{ fontSize: '4.5rem', marginBottom: '1.5rem', opacity: 0.85 }}>?</div>
-            <h2 className={meddon.className} style={{ fontSize: '2rem', marginBottom: '1.5rem', letterSpacing: '0.05em' }}>Link Invalid</h2>
-            <p style={{ fontSize: '1.15rem', opacity: 0.65, lineHeight: 1.6, marginBottom: '2rem', fontFamily: 'sans-serif' }}>
+          <div style={{ 
+            background: 'rgba(24, 29, 32, 0.9)', 
+            border: '1px solid rgba(255, 255, 255, 0.1)', 
+            borderRadius: '28px', 
+            padding: '3rem', 
+            width: 'min(88vw, 72vh, 540px)', 
+            height: 'min(88vw, 72vh, 540px)', 
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'center',
+            alignItems: 'center',
+            boxSizing: 'border-box',
+            textAlign: 'center', 
+            boxShadow: '0 30px 70px rgba(0, 0, 0, 0.35)', 
+            backdropFilter: 'blur(12px)', 
+            color: '#ffffff', 
+            fontFamily: 'var(--font-family)' 
+          }}>
+            <div style={{ fontSize: '4.5rem', marginBottom: '1.5rem', opacity: 0.85 }}>!</div>
+            <h2 style={{ fontSize: '2.2rem', marginBottom: '1.5rem', letterSpacing: '0.05em' }}>Link Invalid</h2>
+            <p style={{ fontSize: '1.15rem', opacity: 0.65, lineHeight: 1.6, marginBottom: 0 }}>
               This personalized link is invalid or has expired. Please verify the URL and try again.
             </p>
-            <a href="/" style={{ display: 'inline-block', border: '1px solid #ffffff', color: '#ffffff', textDecoration: 'none', padding: '0.8rem 2rem', borderRadius: '4px', fontSize: '1.1rem', letterSpacing: '0.1em', transition: 'all 0.3s ease' }}>
-              Return Home
-            </a>
           </div>
         </main>
       </div>
@@ -288,57 +235,10 @@ function GiftPageContent({ artId }: { artId: string }) {
   return (
     <>
       <div className={styles.pageWrapper}>
-        <div className={`${styles.giftOverlay} ${isGiftOpen ? styles.hidden : ''}`}>
-          <div className={styles.contentWrapper} style={{ position: 'relative', zIndex: 2 }}>
-            <h1 className={styles.introText}>
-              <span className={`${styles.scriptText} ${showHi ? styles.show : ''} ${fredericka.className} ${styles.hiGreeting}`}>
-                Hi!
-              </span>
-              <span className={`${styles.scriptText} ${showIm ? styles.show : ''} ${meddon.className}`}>
-                I&apos;m
-              </span>
-            </h1>
-            
-            <div className={styles.logoWrapper}>
-              <AnimatedLogo 
-                startDrawing={startDrawing}
-                isDrawn={isDrawn}
-                isFlipped={isFlipped}
-              />
-            </div>
-
-            <p className={styles.subText}>
-              <span className={`${styles.scriptText} ${showICreate ? styles.show : ''} ${meddon.className}`}>
-                I like 
-              </span>
-              <span className={`${styles.ambigramsText} ${showAmbigrams ? styles.show : ''} ${eagleLake.className}`}>
-                ambigrams
-              </span>
-            </p>
-          </div>
-
-          <button 
-            className={`${styles.proceedLink} ${showProceed ? styles.show : ''}`} 
-            onClick={handleOpenGift}
-          >
-            <div className={styles.proceedCircle}>
-              <svg 
-                className={styles.arrowSvg} 
-                width="24" 
-                height="24" 
-                viewBox="0 0 24 24" 
-                fill="none" 
-                stroke="currentColor" 
-                strokeWidth="2.5" 
-                strokeLinecap="round" 
-                strokeLinejoin="round"
-              >
-                <line x1="5" y1="12" x2="19" y2="12"></line>
-                <polyline points="12 5 19 12 12 19"></polyline>
-              </svg>
-            </div>
-          </button>
-        </div>
+        <IntroScreen 
+          onProceed={handleOpenGift} 
+          isDismissed={isGiftOpen} 
+        />
 
         <div className={styles.topSpacer} />
 
@@ -363,15 +263,7 @@ function GiftPageContent({ artId }: { artId: string }) {
                       <div className={styles.mysteryMandala}></div>
                       <div className={styles.mysteryLogo}>?</div>
                     </div>
-                    <button 
-                      className={styles.revealButton} 
-                      onClick={(e) => { 
-                        e.stopPropagation(); 
-                        handleRevealGift(); 
-                      }}
-                    >
-                      Reveal
-                    </button>
+                    <div className={styles.revealHint}>Click to reveal</div>
                   </div>
                 ) : (
                   <video 
