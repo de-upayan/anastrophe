@@ -215,7 +215,7 @@
   left: 0;
   width: 100%;
   height: 100%;
-  background: var(--theme-bg-dark);
+  background: transparent;
   z-index: 500;
   display: flex;
   justify-content: center;
@@ -506,18 +506,20 @@
   width: 54px;
   height: 54px;
   border-radius: 50%;
-  border: 1px solid rgba(255, 255, 255, 0.06);
-  background: rgba(255, 255, 255, 0.01);
+  border: 1px solid transparent;
+  background-color: transparent;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.5s cubic-bezier(0.25, 1, 0.5, 1);
+  transition: border-color 0.25s cubic-bezier(0.4, 0, 0.2, 1),
+              background-color 0.25s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .arrowSvg {
   stroke: var(--theme-text-color);
-  opacity: 0.4;
-  transition: all 0.5s cubic-bezier(0.25, 1, 0.5, 1);
+  opacity: 0.85;
+  transition: stroke 0.25s cubic-bezier(0.4, 0, 0.2, 1),
+              opacity 0.25s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .proceedText {
@@ -534,15 +536,12 @@
 
 .proceedLink:hover .proceedCircle {
   border-color: var(--theme-accent);
-  background: rgba(255, 255, 255, 0.05);
-  transform: translateY(-2px);
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25), 0 0 10px rgba(255, 255, 255, 0.02);
+  background-color: var(--theme-text-color);
 }
 
 .proceedLink:hover .arrowSvg {
-  opacity: 0.9;
-  stroke: var(--theme-accent);
-  transform: scale(1.05);
+  stroke: #ffffff;
+  opacity: 1;
 }
 
 .proceedLink:hover .proceedText {

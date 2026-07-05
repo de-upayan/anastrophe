@@ -35,7 +35,7 @@ export default function LandingPage() {
   // Skip mechanism triggered by clicking anywhere or pressing any key
   useEffect(() => {
     const handleInteraction = (e: MouseEvent | KeyboardEvent) => {
-      // Don't skip if the user clicked the proceed showcase link directly
+      // Don't skip if the user clicked the proceed link directly
       if (e.target && (e.target as HTMLElement).closest(`.${styles.proceedLink}`)) {
         return;
       }
@@ -117,8 +117,8 @@ export default function LandingPage() {
         </p>
       </div>
 
-      <Link href="/showcase" className={`${styles.proceedLink} ${showProceed ? styles.show : ''}`} title="Explore Ambigram Showcase">
-        <span className={styles.proceedText}>Enter Showcase</span>
+      <Link href="/admin" className={`${styles.proceedLink} ${showProceed ? styles.show : ''}`} title="Access Creator Portal">
+        <span className={styles.proceedText}>Admin Portal</span>
         <div className={styles.proceedCircle}>
           <svg 
             className={styles.arrowSvg} 

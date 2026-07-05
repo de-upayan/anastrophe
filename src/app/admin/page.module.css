@@ -1,5 +1,5 @@
 .adminContainer {
-  max-width: 800px;
+  max-width: 1100px;
   margin: 4rem auto 6rem;
   padding: 0 2rem;
   position: relative;
@@ -10,21 +10,22 @@
   font-size: 2.2rem;
   font-weight: 300;
   letter-spacing: 0.1em;
-  margin-bottom: 2.5rem;
-  text-align: center;
+  margin-bottom: 0;
+  text-align: left;
   opacity: 0.85;
 }
 
 /* Elegant physical paper card backing to block background watermarks */
 .glassCard {
-  background: rgba(15, 12, 10, 0.65); /* Dark theme glassmorphic container */
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 6px;
+  background: #181d20; /* Solid deep charcoal black */
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
   padding: 3rem;
-  box-shadow: 0 30px 65px rgba(0, 0, 0, 0.55);
-  -webkit-backdrop-filter: blur(10px);
-  backdrop-filter: blur(10px);
+  box-shadow: 0 20px 45px rgba(0, 0, 0, 0.35);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
   transition: background 1s ease, border-color 1s ease;
+  color: #f0f2f5; /* Explicit light text inheritance */
 }
 
 /* Form Layout */
@@ -224,8 +225,9 @@
   border-radius: 4px;
   padding: 0.6rem;
   color: var(--text-color);
-  font-family: monospace;
+  font-family: var(--font-mono);
   font-size: 1rem;
+  font-weight: 700;
 }
 
 /* Copy text button */
@@ -265,4 +267,636 @@
 
 .toast.show {
   transform: translate(-50%, 0);
+}
+
+/* Gifts Dashboard */
+.giftsDashboardCard {
+  margin-top: 3rem;
+  padding: 2.5rem 2rem;
+  width: 100%;
+}
+
+.dashboardSubtitle {
+  font-size: 1.6rem;
+  font-weight: 300;
+  letter-spacing: 0.12em;
+  color: var(--text-color);
+  margin-bottom: 2rem;
+  text-align: left;
+}
+
+.giftsTableContainer {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.giftsTable {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+}
+
+.giftsTable th {
+  font-size: 0.95rem;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-color);
+  opacity: 0.5;
+  padding: 1rem;
+  border-bottom: 1.5px solid var(--border-color);
+}
+
+.giftsTable td {
+  padding: 1.2rem 1rem;
+  border-bottom: 1px solid var(--border-color);
+  font-size: 1.1rem;
+  color: var(--text-color);
+  vertical-align: middle;
+}
+
+.giftsTable tr:last-child td {
+  border-bottom: none;
+}
+
+.giftTitleCell {
+  font-weight: 500;
+}
+
+.giftLink {
+  color: var(--text-color);
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+  transition: all 0.3s ease;
+}
+
+.giftLink:hover {
+  border-bottom-color: var(--text-color);
+}
+
+.statNumber {
+  font-family: var(--font-mono);
+  font-size: 1.15rem;
+  font-weight: 800;
+}
+
+.mutedText {
+  opacity: 0.35;
+  font-size: 1rem;
+}
+
+.passwordCode {
+  background: rgba(120, 120, 120, 0.08);
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  padding: 0.2rem 0.5rem;
+  font-family: var(--font-mono);
+  font-size: 0.95rem;
+  color: var(--text-color);
+  font-weight: 700;
+}
+
+.actionButtons {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.8rem;
+}
+
+.actionBtn {
+  background: transparent;
+  border: 1px solid var(--border-color);
+  color: var(--text-color);
+  padding: 0.45rem 1rem;
+  border-radius: 4px;
+  font-family: var(--font-family);
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.actionBtn:hover {
+  border-color: var(--text-color);
+  background: rgba(120, 120, 120, 0.05);
+}
+
+.deleteBtn {
+  border-color: rgba(219, 90, 90, 0.3);
+  color: #db5a5a;
+}
+
+.deleteBtn:hover {
+  border-color: #db5a5a;
+  background: rgba(219, 90, 90, 0.08);
+  color: #db5a5a;
+}
+
+.noGiftsText {
+  font-size: 1.2rem;
+  opacity: 0.55;
+  text-align: center;
+  padding: 3rem 0;
+}
+
+/* Dashboard Layout and Tabs */
+.dashboardHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  margin-bottom: 2.5rem;
+  border-bottom: 1px solid var(--border-color);
+  padding-bottom: 1rem;
+}
+
+.tabNav {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.tabBtn {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--border-color);
+  color: var(--text-color);
+  padding: 0.6rem 1.4rem;
+  border-radius: 4px;
+  font-family: var(--font-family);
+  font-size: 1rem;
+  letter-spacing: 0.05em;
+  cursor: pointer;
+  opacity: 0.65;
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+.tabBtn:hover {
+  opacity: 0.95;
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.activeTab {
+  background: var(--text-color) !important;
+  color: var(--bg-color) !important;
+  border-color: var(--text-color);
+  opacity: 1;
+}
+
+.tabContent {
+  animation: fadeIn 0.4s ease forwards;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Metrics Row */
+.metricsRow {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2.5rem;
+}
+
+.metricCard {
+  background: rgba(15, 12, 10, 0.65);
+  background: #181d20; /* Solid dark charcoal matching glassCard */
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  padding: 2rem;
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.25);
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  transition: all 0.3s ease;
+}
+
+.metricCard:hover {
+  border-color: rgba(255, 255, 255, 0.2);
+  transform: translateY(-2px);
+}
+
+.metricLabel {
+  font-size: 0.95rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: rgba(255, 255, 255, 0.45);
+}
+
+.metricValue {
+  font-size: 3rem;
+  font-weight: 300;
+  color: #ffffff;
+  line-height: 1;
+}
+
+/* High Contrast Dark Form Overrides */
+.glassCard label {
+  color: rgba(255, 255, 255, 0.55);
+}
+
+.glassCard input[type="text"],
+.glassCard input[type="password"],
+.glassCard textarea {
+  color: #ffffff !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.15) !important;
+}
+
+.glassCard input[type="text"]:focus,
+.glassCard input[type="password"]:focus,
+.glassCard textarea:focus {
+  border-bottom-color: #ffffff !important;
+}
+
+/* File Dropzones */
+.glassCard .fileInputBox {
+  border-color: rgba(255, 255, 255, 0.15);
+  color: rgba(255, 255, 255, 0.55);
+  opacity: 0.8;
+}
+
+.glassCard .fileInputBox:hover {
+  border-color: rgba(255, 255, 255, 0.5);
+  color: #ffffff;
+  opacity: 1;
+}
+
+.glassCard .fileSelectedText {
+  color: #ffffff;
+}
+
+/* Create Button */
+.glassCard .btn {
+  border-color: #ffffff;
+  color: #ffffff;
+  background: transparent;
+}
+
+.glassCard .btn:hover {
+  background: #ffffff;
+  color: #181d20;
+}
+
+/* Success Result Box */
+.glassCard .resultBox {
+  border-color: rgba(255, 255, 255, 0.18);
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.glassCard .resultBox h3 {
+  color: #ffffff;
+}
+
+.glassCard .resultBox p {
+  color: rgba(255, 255, 255, 0.65);
+}
+
+.glassCard .linkInput {
+  border-color: rgba(255, 255, 255, 0.15);
+  color: #ffffff;
+}
+
+.glassCard .copyBtn {
+  border-color: rgba(255, 255, 255, 0.25);
+  color: #ffffff;
+}
+
+.glassCard .copyBtn:hover {
+  border-color: #ffffff;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+/* Premium Table Styling */
+.tableTitle {
+  font-size: 1.2rem;
+  font-weight: 300;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  margin-bottom: 2rem;
+  opacity: 0.85;
+  color: #ffffff;
+}
+
+.tableWrapper {
+  width: 100%;
+  overflow-x: auto;
+}
+
+/* Custom scrollbar for table container to prevent global overflow */
+.tableWrapper::-webkit-scrollbar {
+  height: 6px;
+}
+
+.tableWrapper::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.02);
+  border-radius: 3px;
+}
+
+.tableWrapper::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 3px;
+}
+
+.tableWrapper::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.giftsTable {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+}
+
+.giftsTable th {
+  font-size: 0.85rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: rgba(255, 255, 255, 0.45) !important;
+  padding: 1rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.12) !important;
+}
+
+.giftsTable tr {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  transition: background 0.2s ease;
+}
+
+.giftsTable tr:hover {
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.giftsTable td {
+  padding: 1rem;
+  font-size: 0.95rem;
+  color: #e2e8f0 !important;
+  vertical-align: middle;
+}
+
+/* Custom Cells */
+.codeCell {
+  font-family: var(--font-mono);
+  font-size: 1.05rem;
+  font-weight: 800;
+}
+
+.giftLink {
+  color: #ffffff !important;
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+  transition: all 0.3s ease;
+}
+
+.giftLink:hover {
+  border-bottom-color: #ffffff !important;
+}
+
+.recipientBadge {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 4px;
+  padding: 0.25rem 0.6rem;
+  font-size: 0.85rem;
+  letter-spacing: 0.05em;
+  color: #ffffff;
+  text-transform: capitalize;
+}
+
+.numberCell {
+  font-family: var(--font-mono);
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: #ffffff !important;
+}
+
+.dateCell {
+  font-size: 0.9rem;
+  opacity: 0.65;
+}
+
+.passwordCode {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 4px;
+  padding: 0.2rem 0.5rem;
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  color: #ffffff !important;
+  font-weight: 700;
+  display: inline-block;
+  min-width: 110px;
+  max-width: 150px;
+  vertical-align: middle;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.actionButtons {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.6rem;
+}
+
+.actionBtn {
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: rgba(255, 255, 255, 0.8) !important;
+  padding: 0.35rem 0.8rem;
+  border-radius: 4px;
+  font-family: var(--font-family);
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.actionBtn:hover {
+  border-color: #ffffff;
+  color: #ffffff !important;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.deleteBtn {
+  border-color: rgba(239, 68, 68, 0.3);
+  color: #ef4444 !important;
+}
+
+.deleteBtn:hover {
+  border-color: #ef4444;
+  background: rgba(239, 68, 68, 0.1);
+  color: #ef4444 !important;
+}
+
+/* SVG Activity Timeline Chart Styling */
+.chartHeaderRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.chartCardTitle {
+  font-size: 1.25rem;
+  font-weight: 300;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #ffffff;
+  margin: 0;
+}
+
+.chartLegend {
+  display: flex;
+  gap: 1.5rem;
+}
+
+.legendItem {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.85rem;
+  letter-spacing: 0.05em;
+  opacity: 0.8;
+  color: #ffffff;
+}
+
+.legendDot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.viewDot {
+  background: #00f2fe;
+  box-shadow: 0 0 8px rgba(0, 242, 254, 0.4);
+}
+
+.downloadDot {
+  background: #ff4b72;
+  box-shadow: 0 0 8px rgba(255, 75, 114, 0.4);
+}
+
+.svgContainer {
+  width: 100%;
+  margin-top: 1rem;
+}
+
+.chartSvg {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.chartText {
+  fill: rgba(255, 255, 255, 0.45);
+  font-family: var(--font-family);
+  font-size: 0.8rem;
+  font-weight: 500;
+}
+
+.chartXText {
+  fill: rgba(255, 255, 255, 0.45);
+  font-family: var(--font-family);
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+.emptyChartMessage {
+  font-size: 1.1rem;
+  opacity: 0.5;
+  text-align: center;
+  padding: 3rem 0;
+}
+
+.filterDropdown {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 4px;
+  color: #ffffff;
+  padding: 0.4rem 1.8rem 0.4rem 1rem;
+  font-family: var(--font-family);
+  font-size: 0.9rem;
+  outline: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  appearance: none;
+  -webkit-appearance: none;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='10' fill='white'><path d='M0 3h10L5 8z'/></svg>");
+  background-repeat: no-repeat;
+  background-position: right 0.7rem center;
+}
+
+.filterDropdown:hover, .filterDropdown:focus {
+  border-color: rgba(255, 255, 255, 0.4);
+  background-color: rgba(255, 255, 255, 0.08);
+}
+
+.filterDropdown option {
+  background: #181d20;
+  color: #ffffff;
+}
+
+.legendText {
+  font-size: 0.85rem;
+  letter-spacing: 0.05em;
+  opacity: 0.9;
+  color: #ffffff;
+}
+
+.legendText strong {
+  color: #ffffff;
+  font-weight: 800;
+  font-family: var(--font-mono);
+  font-size: 1rem;
+}
+
+.passwordContainer {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.eyeBtn {
+  background: transparent;
+  border: none;
+  color: rgba(255, 255, 255, 0.4);
+  cursor: pointer;
+  padding: 0.2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+}
+
+.eyeBtn:hover {
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.iconActionBtn {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: rgba(255, 255, 255, 0.65);
+  border-radius: 6px;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.iconActionBtn:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.35);
+  color: #ffffff;
+}
+
+.deleteActionBtn:hover {
+  background: rgba(239, 68, 68, 0.15);
+  border-color: rgba(239, 68, 68, 0.4);
+  color: #ef4444;
 }

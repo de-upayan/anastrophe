@@ -12,14 +12,14 @@ export default function Navigation() {
 
   return (
     <header className={styles.header}>
-      <Link href="/" className={styles.logoLink} title="Symmetry Showcase">
-        <div className={styles.logo} aria-label="Upayan Ambigram Logo" />
+      <Link href="/" className={styles.logoLink} title="Anastrepho.">
+        <div className={styles.logo} aria-label="Anastrepho. Logo" />
       </Link>
       
       {pathname === '/admin' && (
         <nav className={styles.adminNav}>
-          <Link href="/showcase" className={styles.backBtn}>
-            ← Back to Showcase
+          <Link href="/" className={styles.backBtn}>
+            ← Back to Home
           </Link>
         </nav>
       )}

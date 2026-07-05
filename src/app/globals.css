@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Bitcount+Prop+Single:wght@100;200;300;400;500;600;700;800;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Bitcount+Prop+Single:wght@100;200;300;400;500;600;700;800;900&family=Doto:wght@100..900&display=swap');
 
 :root {
   --theme-bg-dark: #d5be9b;
@@ -15,6 +15,7 @@
   --border-color: rgba(120, 120, 120, 0.15);
   --primary: var(--theme-accent);
   --font-family: 'Bitcount Prop Single', sans-serif;
+  --font-mono: 'Doto', monospace;
 }
 
 * {

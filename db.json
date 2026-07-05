@@ -1,37 +1,118 @@
 [
   {
-    "id": "ambivalence",
-    "title": "ambivalence",
-    "description": "reflected and rotated symmetry",
-    "imageSrc": "/art/ambivalence.svg",
-    "timelapseSrc": "/art/ambivalence_timelapse.mp4",
-    "isPublic": true,
-    "isShareable": true,
-    "password": "secret123",
-    "createdAt": "2026-06-27T19:41:52.597Z"
-  },
-  {
-    "id": "symmetry-art",
-    "title": "symmetry",
+    "id": "gH2xK9w8",
+    "title": "Symmetry",
     "recipient": "Alice",
-    "description": "specially crafted design exploring center symmetry",
+    "description": "A specially crafted ambigram design exploring center rotation.",
     "imageSrc": "/art/symmetry.svg",
     "timelapseSrc": "/art/symmetry_timelapse.mp4",
-    "isPublic": true,
-    "isShareable": true,
     "password": "secret123",
-    "createdAt": "2026-06-27T19:41:52.597Z"
-  },
-  {
-    "id": "illusionist",
-    "title": "illusionist",
-    "recipient": "Bob",
-    "description": "optical shift showing dynamic shapes",
-    "imageSrc": "/art/illusionist.svg",
-    "timelapseSrc": "/art/illusionist_timelapse.mp4",
-    "isPublic": true,
-    "isShareable": true,
-    "password": "secret123",
-    "createdAt": "2026-06-27T19:41:52.597Z"
+    "createdAt": "2026-07-01T10:22:14.000Z",
+    "views": 22,
+    "downloads": 3,
+    "viewsLog": [
+      {
+        "timestamp": "2026-07-02T12:00:00.000Z",
+        "viewerId": "a1b2c3d4"
+      },
+      {
+        "timestamp": "2026-07-02T15:30:00.000Z",
+        "viewerId": "e5f6g7h8"
+      },
+      {
+        "timestamp": "2026-07-03T09:15:00.000Z",
+        "viewerId": "a1b2c3d4"
+      },
+      {
+        "timestamp": "2026-07-04T18:45:00.000Z",
+        "viewerId": "i9j0k1l2"
+      },
+      {
+        "timestamp": "2026-07-05T10:00:00.000Z",
+        "viewerId": "m3n4o5p6"
+      },
+      {
+        "timestamp": "2026-07-05T14:22:00.000Z",
+        "viewerId": "e5f6g7h8"
+      },
+      {
+        "timestamp": "2026-07-05T16:00:00.000Z",
+        "viewerId": "q7r8s9t0"
+      },
+      {
+        "timestamp": "2026-07-05T17:54:53.831Z",
+        "viewerId": "eff8e7ca506627fe"
+      },
+      {
+        "timestamp": "2026-07-05T17:56:00.806Z",
+        "viewerId": "eff8e7ca506627fe"
+      },
+      {
+        "timestamp": "2026-07-05T17:56:52.160Z",
+        "viewerId": "eff8e7ca506627fe"
+      },
+      {
+        "timestamp": "2026-07-05T17:58:02.961Z",
+        "viewerId": "eff8e7ca506627fe"
+      },
+      {
+        "timestamp": "2026-07-05T18:00:05.460Z",
+        "viewerId": "eff8e7ca506627fe"
+      },
+      {
+        "timestamp": "2026-07-05T18:02:17.109Z",
+        "viewerId": "eff8e7ca506627fe"
+      },
+      {
+        "timestamp": "2026-07-05T18:04:11.269Z",
+        "viewerId": "eff8e7ca506627fe"
+      },
+      {
+        "timestamp": "2026-07-05T18:04:17.504Z",
+        "viewerId": "eff8e7ca506627fe"
+      },
+      {
+        "timestamp": "2026-07-05T18:04:24.260Z",
+        "viewerId": "eff8e7ca506627fe"
+      },
+      {
+        "timestamp": "2026-07-05T18:05:01.194Z",
+        "viewerId": "eff8e7ca506627fe"
+      },
+      {
+        "timestamp": "2026-07-05T18:05:15.904Z",
+        "viewerId": "eff8e7ca506627fe"
+      },
+      {
+        "timestamp": "2026-07-05T18:06:11.122Z",
+        "viewerId": "eff8e7ca506627fe"
+      },
+      {
+        "timestamp": "2026-07-05T18:06:19.553Z",
+        "viewerId": "eff8e7ca506627fe"
+      },
+      {
+        "timestamp": "2026-07-05T18:06:40.422Z",
+        "viewerId": "eff8e7ca506627fe"
+      },
+      {
+        "timestamp": "2026-07-05T18:06:58.782Z",
+        "viewerId": "eff8e7ca506627fe"
+      }
+    ],
+    "downloadsLog": [
+      {
+        "timestamp": "2026-07-03T10:00:00.000Z",
+        "viewerId": "a1b2c3d4"
+      },
+      {
+        "timestamp": "2026-07-05T11:30:00.000Z",
+        "viewerId": "m3n4o5p6"
+      },
+      {
+        "timestamp": "2026-07-05T15:00:00.000Z",
+        "viewerId": "e5f6g7h8"
+      }
+    ]
   }
 ]

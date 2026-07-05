@@ -57,8 +57,6 @@ export async function POST(request: Request) {
       description,
       imageSrc,
       timelapseSrc,
-      isPublic,
-      isShareable,
       password
     };
 
@@ -66,7 +64,7 @@ export async function POST(request: Request) {
 
     // Construct response links
     const origin = new URL(request.url).origin;
-    const generatedLink = `${origin}/gift?artId=${id}${recipient ? `&recipient=${encodeURIComponent(recipient)}` : ''}`;
+    const generatedLink = `${origin}/${id}`;
 
     return NextResponse.json({
       success: true,

@@ -3,56 +3,9 @@ import path from 'path';
 
 const DB_PATH = path.join(process.cwd(), 'db.json');
 
-export interface AmbigramItem {
-  id: string;
-  title: string;
-  recipient?: string;
-  description?: string;
-  imageSrc: string;
-  timelapseSrc?: string;
-  isPublic: boolean;
-  isShareable: boolean;
-  password?: string;
-  createdAt?: string;
-}
-
-const DEFAULT_ITEMS: AmbigramItem[] = [
-  {
-    id: 'ambivalence',
-    title: 'ambivalence',
-    description: 'reflected and rotated symmetry',
-    imageSrc: '/art/ambivalence.svg',
-    timelapseSrc: '/art/ambivalence_timelapse.mp4',
-    isPublic: true,
-    isShareable: true,
-    password: 'secret123',
-    createdAt: new Date().toISOString()
-  },
-  {
-    id: 'symmetry-art',
-    title: 'symmetry',
-    recipient: 'Alice',
-    description: 'specially crafted design exploring center symmetry',
-    imageSrc: '/art/symmetry.svg',
-    timelapseSrc: '/art/symmetry_timelapse.mp4',
-    isPublic: true,
-    isShareable: true,
-    password: 'secret123',
-    createdAt: new Date().toISOString()
-  },
-  {
-    id: 'illusionist',
-    title: 'illusionist',
-    recipient: 'Bob',
-    description: 'optical shift showing dynamic shapes',
-    imageSrc: '/art/illusionist.svg',
-    timelapseSrc: '/art/illusionist_timelapse.mp4',
-    isPublic: true,
-    isShareable: true,
-    password: 'secret123',
-    createdAt: new Date().toISOString()
-  }
-];
+import { AmbigramItem, DEFAULT_ITEMS } from './types';
+export type { AmbigramItem };
+export { DEFAULT_ITEMS };
 
 // Helper to check if file exists
 async function fileExists(filePath: string): Promise<boolean> {
@@ -64,24 +17,25 @@ async function fileExists(filePath: string): Promise<boolean> {
   }
 }
 
-// Read all records from the database
+// Get all ambigrams from JSON database
 export async function getAmbigrams(): Promise<AmbigramItem[]> {
+  const exists = await fileExists(DB_PATH);
+  if (!exists) {
+    // Initialize database with default items on first access
+    await saveAllAmbigrams(DEFAULT_ITEMS);
+    return DEFAULT_ITEMS;
+  }
+
   try {
-    const exists = await fileExists(DB_PATH);
-    if (!exists) {
-      // Seed the JSON file
-      await saveAllAmbigrams(DEFAULT_ITEMS);
-      return DEFAULT_ITEMS;
-    }
     const data = await fs.readFile(DB_PATH, 'utf-8');
-    return JSON.parse(data) as AmbigramItem[];
+    return JSON.parse(data);
   } catch (error) {
-    console.error('Error reading JSON DB, returning defaults:', error);
+    console.error('Error reading JSON DB file, fallback to defaults:', error);
     return DEFAULT_ITEMS;
   }
 }
 
-// Save all records to the database (internal helper)
+// Save all items back to file
 export async function saveAllAmbigrams(items: AmbigramItem[]): Promise<void> {
   await fs.writeFile(DB_PATH, JSON.stringify(items, null, 2), 'utf-8');
 }
@@ -93,13 +47,15 @@ export async function saveAmbigram(item: AmbigramItem): Promise<void> {
   
   const newItem = {
     ...item,
+    views: item.views ?? 0,
+    downloads: item.downloads ?? 0,
     createdAt: item.createdAt || new Date().toISOString()
   };
 
   if (index !== -1) {
     items[index] = newItem;
   } else {
-    items.unshift(newItem); // prepends new items to show up first in showcase
+    items.unshift(newItem); // prepends new items to show up first
   }
   await saveAllAmbigrams(items);
 }
@@ -108,4 +64,51 @@ export async function saveAmbigram(item: AmbigramItem): Promise<void> {
 export async function getAmbigramById(id: string): Promise<AmbigramItem | null> {
   const items = await getAmbigrams();
   return items.find(item => item.id === id) || null;
+}
+
+// Delete an ambigram by ID (metadata-only, does not delete files from disk)
+export async function deleteAmbigram(id: string): Promise<void> {
+  const items = await getAmbigrams();
+  const updatedItems = items.filter(item => item.id !== id);
+  await saveAllAmbigrams(updatedItems);
+}
+
+// Increment views counter with telemetry logging
+export async function incrementViews(id: string, viewerId?: string): Promise<void> {
+  const items = await getAmbigrams();
+  const index = items.findIndex(x => x.id === id);
+  if (index !== -1) {
+    const item = items[index];
+    if (!item.viewsLog) item.viewsLog = [];
+    
+    // Add view event record
+    item.viewsLog.push({
+      timestamp: new Date().toISOString(),
+      viewerId: viewerId || 'anonymous'
+    });
+    
+    // Keep counter in sync for backward compatibility
+    item.views = item.viewsLog.length;
+    await saveAllAmbigrams(items);
+  }
+}
+
+// Increment downloads counter with telemetry logging
+export async function incrementDownloads(id: string, viewerId?: string): Promise<void> {
+  const items = await getAmbigrams();
+  const index = items.findIndex(x => x.id === id);
+  if (index !== -1) {
+    const item = items[index];
+    if (!item.downloadsLog) item.downloadsLog = [];
+    
+    // Add download event record
+    item.downloadsLog.push({
+      timestamp: new Date().toISOString(),
+      viewerId: viewerId || 'anonymous'
+    });
+    
+    // Keep counter in sync for backward compatibility
+    item.downloads = item.downloadsLog.length;
+    await saveAllAmbigrams(items);
+  }
 }

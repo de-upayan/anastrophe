@@ -1,66 +1,25 @@
 'use client';
 
-import { useState, useEffect, useRef, Suspense } from 'react';
+import React, { useState, useEffect, useRef, Suspense, use } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { useTheme } from '@/context/ThemeContext';
 import { Meddon, Eagle_Lake } from 'next/font/google';
 import AnimatedLogo from '@/components/AnimatedLogo';
+import { AmbigramItem, DEFAULT_ITEMS } from '@/lib/types';
 import styles from './page.module.css';
 
 const meddon = Meddon({ weight: '400', subsets: ['latin'] });
 const eagleLake = Eagle_Lake({ weight: '400', subsets: ['latin'] });
 
-interface AmbigramItem {
-  id: string;
-  title: string;
-  recipient?: string;
-  description?: string;
-  imageSrc: string;
-  timelapseSrc: string;
-  isPublic: boolean;
-  isShareable: boolean;
-}
-
-const DEFAULT_ITEMS: AmbigramItem[] = [
-  {
-    id: 'ambivalence',
-    title: 'ambivalence',
-    imageSrc: '/images.svg',
-    timelapseSrc: '/timelapse.mp4',
-    isPublic: true,
-    isShareable: true,
-    description: 'a hand-drawn ambigram reflecting duality and fluid perception.'
-  },
-  {
-    id: 'symmetry-art',
-    title: 'symmetry & art',
-    imageSrc: '/images.svg',
-    timelapseSrc: '/timelapse.mp4',
-    isPublic: true,
-    isShareable: true,
-    description: 'exploring mathematical symmetry through hand-lettered calligraphy.'
-  },
-  {
-    id: 'illusionist',
-    title: 'illusionist',
-    imageSrc: '/images.svg',
-    timelapseSrc: '/timelapse.mp4',
-    isPublic: true,
-    isShareable: true,
-    description: 'a visual riddle that shifts identities when viewed from different angles.'
-  }
-];
-
-function GiftPageContent() {
+function GiftPageContent({ artId }: { artId: string }) {
   const searchParams = useSearchParams();
-  const recipientParam = searchParams.get('recipient');
-  const artIdParam = searchParams.get('artId');
+  const recipientOverride = searchParams.get('recipient');
 
-  const [items, setItems] = useState<AmbigramItem[]>([]);
   const [activeItem, setActiveItem] = useState<AmbigramItem | null>(null);
+  const [isNotFound, setIsNotFound] = useState(false);
   
   // Connect to global theme provider
-  const { activeTheme, triggerGiftReveal } = useTheme();
+  const { triggerGiftReveal } = useTheme();
 
   // Gift Overlay State
   const [isGiftOpen, setIsGiftOpen] = useState(false);
@@ -70,7 +29,6 @@ function GiftPageContent() {
   // Ambigram interaction states
   const [isRotated, setIsRotated] = useState(false);
   const [isTimelapseOpen, setIsTimelapseOpen] = useState(false);
-  const [isTimelapseVisible, setIsTimelapseVisible] = useState(false);
   const [isPasswordOpen, setIsPasswordOpen] = useState(false);
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
   
@@ -98,28 +56,37 @@ function GiftPageContent() {
   // Sync with API
   useEffect(() => {
     async function loadActiveGift() {
-      let list: AmbigramItem[] = [];
+      let chosenItem: AmbigramItem | null = null;
       try {
-        const res = await fetch('/api/ambigrams');
+        const res = await fetch(`/api/ambigrams/${artId}`);
         const data = await res.json();
-        if (data.success && data.ambigrams) {
-          list = data.ambigrams;
+        if (data.success && data.ambigram) {
+          chosenItem = data.ambigram;
         } else {
-          list = DEFAULT_ITEMS;
+          setIsNotFound(true);
+          return;
         }
       } catch (e) {
-        list = DEFAULT_ITEMS;
+        console.error('Error fetching active gift:', e);
+        setIsNotFound(true);
+        return;
       }
 
-      // Read current art ID from search param
-      const chosenItem = list.find((item) => item.id === artIdParam) || list[0];
       setActiveItem(chosenItem);
 
+      // Increment views counter
+      if (chosenItem && chosenItem.id) {
+        fetch(`/api/ambigrams/${chosenItem.id}`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ action: 'view' })
+        }).catch(err => console.error('Error logging view:', err));
+      }
+
       // Customize recipient text
-      if (recipientParam) {
-        setRecipientText(`Specially Crafted for ${recipientParam}`);
-      } else if (chosenItem && chosenItem.recipient) {
-        setRecipientText(`Specially Crafted for ${chosenItem.recipient}`);
+      const recipientName = recipientOverride || chosenItem.recipient || '';
+      if (recipientName) {
+        setRecipientText(`Specially Crafted for ${recipientName}`);
       } else {
         setRecipientText('Specially Crafted for You');
       }
@@ -142,7 +109,7 @@ function GiftPageContent() {
       }
     }
     loadActiveGift();
-  }, [recipientParam, artIdParam, searchParams]);
+  }, [recipientOverride, artId, searchParams]);
 
   // Skip / Instant slide out function
   const handleSkipIntro = () => {
@@ -155,7 +122,7 @@ function GiftPageContent() {
     setShowICreate(true);
     setIsFlipped(true);
     setShowAmbigrams(true);
-    setShowProceed(true); // Don't slide out automatically, reveal the proceed button instead!
+    setShowProceed(true);
   };
 
   // Play landing intro animation sequentially
@@ -165,15 +132,14 @@ function GiftPageContent() {
     const timers = [
       setTimeout(() => setShowHi(true), 300),
       setTimeout(() => setShowIm(true), 1300),
-      setTimeout(() => setStartDrawing(true), 2300),
-      setTimeout(() => setIsDrawn(true), 4300),
-      setTimeout(() => setShowICreate(true), 4600),
-      setTimeout(() => setIsFlipped(true), 5800),
-      setTimeout(() => setShowAmbigrams(true), 8300),
-      // Float in the proceed button after "ambigrams" fades in
+      setTimeout(() => setStartDrawing(true), 1300),
+      setTimeout(() => setIsDrawn(true), 3300),
+      setTimeout(() => setShowICreate(true), 3600),
+      setTimeout(() => setIsFlipped(true), 4800),
+      setTimeout(() => setShowAmbigrams(true), 4800),
       setTimeout(() => {
         setShowProceed(true);
-      }, 9300),
+      }, 5800),
     ];
 
     landingTimersRef.current = timers;
@@ -188,7 +154,6 @@ function GiftPageContent() {
     if (isGiftOpen || showProceed) return;
 
     const handleWindowInteraction = (e: MouseEvent | KeyboardEvent) => {
-      // Don't skip if the user clicked the proceed link directly
       if (e.target && (e.target as HTMLElement).closest(`[class*="proceedLink"]`)) {
         return;
       }
@@ -208,7 +173,6 @@ function GiftPageContent() {
     setIsRotated(!isRotated);
   };
 
-  // 3D Card Flip Timelapse toggle action
   const toggleTimelapse = () => {
     if (isTimelapseOpen) {
       setIsTimelapseOpen(false);
@@ -225,7 +189,6 @@ function GiftPageContent() {
     }
   };
 
-  // Password actions
   const openDownload = () => {
     setPassword('');
     setIsPasswordError(false);
@@ -243,10 +206,27 @@ function GiftPageContent() {
   };
 
   const handleVerifyPassword = () => {
-    if (password === 'secret123') {
+    const expectedPassword = activeItem?.password || 'secret123';
+    
+    if (password === expectedPassword) {
       setIsPasswordError(false);
       closeDownload();
       showToast('Downloading archive...');
+
+      if (activeItem && activeItem.id) {
+        fetch(`/api/ambigrams/${activeItem.id}`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ action: 'download' })
+        }).catch(err => console.error('Error logging download:', err));
+      }
+
+      const link = document.createElement('a');
+      link.href = activeItem.imageSrc;
+      link.download = `${activeItem.title || 'ambigram'}.svg`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
     } else {
       setIsPasswordError(true);
     }
@@ -271,11 +251,35 @@ function GiftPageContent() {
     triggerGiftReveal();
   };
 
+  if (isNotFound) {
+    return (
+      <div className={styles.pageWrapper}>
+        <div className="mandala-bg-container" style={{ position: 'absolute', zIndex: 1, pointerEvents: 'none' }}>
+          <div className="mandala mandala-left"></div>
+          <div className="mandala mandala-rt"></div>
+          <div className="mandala mandala-rb"></div>
+        </div>
+
+        <main className={styles.artContainer} style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', height: '80vh', zIndex: 5 }}>
+          <div style={{ background: 'rgba(24, 29, 32, 0.9)', border: '1px solid rgba(255, 255, 255, 0.1)', borderRadius: '8px', padding: '3.5rem', maxWidth: '500px', textAlign: 'center', boxShadow: '0 20px 45px rgba(0,0,0,0.3)', backdropFilter: 'blur(12px)', color: '#ffffff' }}>
+            <div style={{ fontSize: '4.5rem', marginBottom: '1.5rem', opacity: 0.85 }}>?</div>
+            <h2 className={meddon.className} style={{ fontSize: '2rem', marginBottom: '1.5rem', letterSpacing: '0.05em' }}>Link Invalid</h2>
+            <p style={{ fontSize: '1.15rem', opacity: 0.65, lineHeight: 1.6, marginBottom: '2rem', fontFamily: 'sans-serif' }}>
+              This personalized link is invalid or has expired. Please verify the URL and try again.
+            </p>
+            <a href="/" style={{ display: 'inline-block', border: '1px solid #ffffff', color: '#ffffff', textDecoration: 'none', padding: '0.8rem 2rem', borderRadius: '4px', fontSize: '1.1rem', letterSpacing: '0.1em', transition: 'all 0.3s ease' }}>
+              Return Home
+            </a>
+          </div>
+        </main>
+      </div>
+    );
+  }
+
   if (!activeItem) return null;
 
-  const recipientName = recipientParam || (activeItem && activeItem.recipient) || '';
+  const recipientName = recipientOverride || activeItem.recipient || '';
   
-  // Explicit 3D rotation state classes
   const cardStateClass = !isRevealed 
     ? styles.stateSealed 
     : (isTimelapseOpen ? styles.stateTimelapse : styles.stateArtwork);
@@ -283,16 +287,7 @@ function GiftPageContent() {
   return (
     <>
       <div className={styles.pageWrapper}>
-
-        {/* Premium Gift Intro Overlay */}
         <div className={`${styles.giftOverlay} ${isGiftOpen ? styles.hidden : ''}`}>
-          {/* Floating background mandalas inside overlay so they show behind the text! */}
-          <div className="mandala-bg-container" style={{ position: 'absolute', zIndex: 1, pointerEvents: 'none' }}>
-            <div className="mandala mandala-left"></div>
-            <div className="mandala mandala-rt"></div>
-            <div className="mandala mandala-rb"></div>
-          </div>
-
           <div className={styles.contentWrapper} style={{ position: 'relative', zIndex: 2 }}>
             <h1 className={styles.introText}>
               <span className={`${styles.scriptText} ${showHi ? styles.show : ''} ${meddon.className}`}>
@@ -321,22 +316,19 @@ function GiftPageContent() {
             </p>
           </div>
 
-          {/* Vertical Proceed Arrow Button on the right to enter the gift page */}
           <button 
             className={`${styles.proceedLink} ${showProceed ? styles.show : ''}`} 
             onClick={handleOpenGift}
-            title="Open Your Ambigram Gift"
           >
-            <span className={styles.proceedText}>Open Gift</span>
             <div className={styles.proceedCircle}>
               <svg 
                 className={styles.arrowSvg} 
-                width="20" 
-                height="20" 
+                width="24" 
+                height="24" 
                 viewBox="0 0 24 24" 
                 fill="none" 
                 stroke="currentColor" 
-                strokeWidth="1.5" 
+                strokeWidth="2.5" 
                 strokeLinecap="round" 
                 strokeLinejoin="round"
               >
@@ -347,10 +339,8 @@ function GiftPageContent() {
           </button>
         </div>
 
-        {/* Top Spacer to balance vertical centering */}
         <div className={styles.topSpacer} />
 
-        {/* The centerpiece 3D Flip Card */}
         <main className={styles.artContainer}>
           <h2 className={`${styles.giftHeader} ${isGiftOpen ? styles.show : ''}`}>
             <span className={`${styles.scriptTextPart} ${meddon.className}`}>
@@ -365,7 +355,6 @@ function GiftPageContent() {
           <div className={`${styles.flipContainer} ${isGiftOpen ? styles.show : ''} ${isRevealed ? styles.revealed : ''}`}>
             <div className={`${styles.flipCardInner} ${cardStateClass} ${isRotated ? styles.cardRotated : ''}`}>
               
-              {/* Front Side: Sealed Mystery State OR Video Player once timelapse is open */}
               <div className={`${styles.cardFront} ${isTimelapseOpen ? styles.videoMode : ''}`}>
                 {!isTimelapseOpen ? (
                   <div className={styles.mysteryState} onClick={() => handleRevealGift()}>
@@ -396,7 +385,6 @@ function GiftPageContent() {
                 )}
               </div>
 
-              {/* Back Side: SVG Ambigram Artwork */}
               <div className={styles.cardBack} onClick={toggleRotation} title="Click to rotate 180°">
                 {isRevealed && (
                   <>
@@ -415,33 +403,27 @@ function GiftPageContent() {
           </div>
         </main>
 
-        {/* Bottom Section centering the footer controls in remaining space */}
         <div className={`${styles.bottomSection} ${isRevealed ? styles.revealed : ''}`}>
           <footer className={styles.artControls}>
             <button className={`${styles.controlLink} ${styles.linkLeft}`} onClick={toggleTimelapse}>
               {isTimelapseOpen ? 'Show Artwork' : 'Play Timelapse'}
             </button>
-            {activeItem.isShareable && (
-              <>
-                <span className={styles.controlDivider}>•</span>
-                <button className={`${styles.controlLink} ${styles.linkRight}`} onClick={openDownload}>
-                  Download Assets
-                </button>
-              </>
-            )}
+            <>
+              <span className={styles.controlDivider}>•</span>
+              <button className={`${styles.controlLink} ${styles.linkRight}`} onClick={openDownload}>
+                Download Assets
+              </button>
+            </>
           </footer>
         </div>
 
-        {/* Toast notifications */}
         <div className={`${styles.toast} ${isToastVisible ? styles.show : ''}`}>
           <span>{toastMessage}</span>
         </div>
       </div>
 
-      {/* Download Password Overlay - Rendered outside pageWrapper to bypass Chromium's overflow:hidden backdrop-filter bug! */}
       {isPasswordOpen && (
         <div className={`${styles.passwordOverlay} ${isPasswordVisible ? styles.show : ''}`}>
-          {/* Isolated backdrop div for premium frosted glass effect */}
           <div className={styles.backdrop} />
 
           <div className={styles.passwordForm}>
@@ -473,7 +455,8 @@ function GiftPageContent() {
   );
 }
 
-export default function VisitorGiftPage() {
+export default function VisitorGiftPage({ params }: { params: Promise<{ id: string }> }) {
+  const resolvedParams = use(params);
   return (
     <>
       <Suspense fallback={
@@ -481,7 +464,7 @@ export default function VisitorGiftPage() {
           loading...
         </div>
       }>
-        <GiftPageContent />
+        <GiftPageContent artId={resolvedParams.id} />
       </Suspense>
     </>
   );

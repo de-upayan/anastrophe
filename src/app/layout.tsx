@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Ambigram Art Showcase",
-  description: "Exquisite hand-crafted geometric ambigram designs",
+  title: "Anastrepho.",
+  description: "personalized calligraphic ambigram gifts",
 };
 
 import { ThemeProvider } from "@/context/ThemeContext";
