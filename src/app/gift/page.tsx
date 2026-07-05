@@ -51,54 +51,6 @@ const DEFAULT_ITEMS: AmbigramItem[] = [
   }
 ];
 
-const THEMES = [
-  {
-    id: 'bronze',
-    name: 'Earthy Bronze',
-    accent: '#bca57a',
-    bgDark: '#221914',
-    cardBg: '#d2b584',
-    mandalaFilter: 'invert(50%) sepia(25%) saturate(800%) hue-rotate(345deg) opacity(0.05)',
-    textColor: '#e5dac9'
-  },
-  {
-    id: 'emerald',
-    name: 'Forest Jade',
-    accent: '#5f7d65',
-    bgDark: '#0e1711',
-    cardBg: '#8aa691',
-    mandalaFilter: 'invert(45%) sepia(20%) saturate(600%) hue-rotate(85deg) opacity(0.04)',
-    textColor: '#c9dcd0'
-  },
-  {
-    id: 'sapphire',
-    name: 'Deep Ocean',
-    accent: '#4e6d8a',
-    bgDark: '#0b141d',
-    cardBg: '#7ca2c4',
-    mandalaFilter: 'invert(45%) sepia(25%) saturate(700%) hue-rotate(185deg) opacity(0.05)',
-    textColor: '#cbdceb'
-  },
-  {
-    id: 'terracotta',
-    name: 'Earthen Clay',
-    accent: '#a8654c',
-    bgDark: '#20110c',
-    cardBg: '#cfa291',
-    mandalaFilter: 'invert(40%) sepia(30%) saturate(1000%) hue-rotate(350deg) opacity(0.04)',
-    textColor: '#ebd8d0'
-  },
-  {
-    id: 'plum',
-    name: 'Royal Plum',
-    accent: '#805d7a',
-    bgDark: '#160c13',
-    cardBg: '#b394ad',
-    mandalaFilter: 'invert(40%) sepia(20%) saturate(600%) hue-rotate(275deg) opacity(0.04)',
-    textColor: '#ecdbe9'
-  }
-];
-
 function GiftPageContent() {
   const searchParams = useSearchParams();
   const recipientParam = searchParams.get('recipient');

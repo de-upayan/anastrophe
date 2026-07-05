@@ -32,24 +32,24 @@ export const THEMES: ThemePreset[] = [
   {
     id: 'emerald',
     name: 'Forest Jade',
-    accent: '#5f7d65',
-    bgDark: '#aec7b3',  // Lightened to match Earthy Bronze
-    bgRgb: '174, 199, 179',
-    bgStart: '#b8cebf',
-    bgEnd: '#5e7a66',
-    cardBg: '#8aa691',
+    accent: '#6b8971',
+    bgDark: '#c3d5c7',  // Soft pastel sage green
+    bgRgb: '195, 213, 199',
+    bgStart: '#d0e0d3',
+    bgEnd: '#7a9681',
+    cardBg: '#a2b9a7',
     mandalaFilter: 'sepia(20%) saturate(500%) hue-rotate(85deg) opacity(0.04)',
     textColor: '#0e1711'
   },
   {
     id: 'sapphire',
     name: 'Deep Ocean',
-    accent: '#4e6d8a',
-    bgDark: '#a2bbd6',  // Lightened to match Earthy Bronze
-    bgRgb: '162, 187, 214',
-    bgStart: '#b4c7d9',
-    bgEnd: '#48647e',
-    cardBg: '#7ca2c4',
+    accent: '#5a7c9c',
+    bgDark: '#bfd2e3',  // Soft slate ice-blue
+    bgRgb: '191, 210, 227',
+    bgStart: '#ccdceb',
+    bgEnd: '#6b8ba8',
+    cardBg: '#9cb5cc',
     mandalaFilter: 'sepia(25%) saturate(600%) hue-rotate(185deg) opacity(0.04)',
     textColor: '#0b141d'
   },
