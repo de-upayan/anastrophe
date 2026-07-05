@@ -8,6 +8,9 @@ export interface ThemePreset {
   name: string;
   accent: string;
   bgDark: string;
+  bgRgb: string;
+  bgStart: string;
+  bgEnd: string;
   cardBg: string;
   mandalaFilter: string;
   textColor: string;
@@ -18,46 +21,61 @@ export const THEMES: ThemePreset[] = [
     id: 'bronze',
     name: 'Earthy Bronze',
     accent: '#bca57a',
-    bgDark: '#221914',
+    bgDark: '#d5be9b',  // Perfect base line
+    bgRgb: '213, 190, 155',
+    bgStart: '#e1d2be',
+    bgEnd: '#9c8465',
     cardBg: '#d2b584',
-    mandalaFilter: 'invert(50%) sepia(25%) saturate(800%) hue-rotate(345deg) opacity(0.05)',
-    textColor: '#e5dac9'
+    mandalaFilter: 'sepia(30%) saturate(600%) hue-rotate(345deg) opacity(0.04)',
+    textColor: '#221914'
   },
   {
     id: 'emerald',
     name: 'Forest Jade',
     accent: '#5f7d65',
-    bgDark: '#0e1711',
+    bgDark: '#aec7b3',  // Lightened to match Earthy Bronze
+    bgRgb: '174, 199, 179',
+    bgStart: '#b8cebf',
+    bgEnd: '#5e7a66',
     cardBg: '#8aa691',
-    mandalaFilter: 'invert(45%) sepia(20%) saturate(600%) hue-rotate(85deg) opacity(0.04)',
-    textColor: '#c9dcd0'
+    mandalaFilter: 'sepia(20%) saturate(500%) hue-rotate(85deg) opacity(0.04)',
+    textColor: '#0e1711'
   },
   {
     id: 'sapphire',
     name: 'Deep Ocean',
     accent: '#4e6d8a',
-    bgDark: '#0b141d',
+    bgDark: '#a2bbd6',  // Lightened to match Earthy Bronze
+    bgRgb: '162, 187, 214',
+    bgStart: '#b4c7d9',
+    bgEnd: '#48647e',
     cardBg: '#7ca2c4',
-    mandalaFilter: 'invert(45%) sepia(25%) saturate(700%) hue-rotate(185deg) opacity(0.05)',
-    textColor: '#cbdceb'
+    mandalaFilter: 'sepia(25%) saturate(600%) hue-rotate(185deg) opacity(0.04)',
+    textColor: '#0b141d'
   },
   {
     id: 'terracotta',
     name: 'Earthen Clay',
     accent: '#a8654c',
-    bgDark: '#20110c',
+    bgDark: '#dbc2b8',  // Lightened to match Earthy Bronze
+    bgRgb: '219, 194, 184',
+    bgStart: '#e5c9c0',
+    bgEnd: '#94645c',
     cardBg: '#cfa291',
-    mandalaFilter: 'invert(40%) sepia(30%) saturate(1000%) hue-rotate(350deg) opacity(0.04)',
-    textColor: '#ebd8d0'
+    mandalaFilter: 'sepia(30%) saturate(700%) hue-rotate(350deg) opacity(0.04)',
+    textColor: '#20110c'
   },
   {
     id: 'plum',
     name: 'Royal Plum',
     accent: '#805d7a',
-    bgDark: '#160c13',
+    bgDark: '#cebece',  // Lightened to match Earthy Bronze
+    bgRgb: '206, 190, 206',
+    bgStart: '#deccd9',
+    bgEnd: '#84607c',
     cardBg: '#b394ad',
-    mandalaFilter: 'invert(40%) sepia(20%) saturate(600%) hue-rotate(275deg) opacity(0.04)',
-    textColor: '#ecdbe9'
+    mandalaFilter: 'sepia(20%) saturate(500%) hue-rotate(275deg) opacity(0.04)',
+    textColor: '#160c13'
   }
 ];
 
@@ -91,6 +109,9 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     const root = document.documentElement;
     root.style.setProperty('--theme-bg-dark', activeTheme.bgDark);
+    root.style.setProperty('--theme-bg-rgb', activeTheme.bgRgb);
+    root.style.setProperty('--theme-bg-start', activeTheme.bgStart);
+    root.style.setProperty('--theme-bg-end', activeTheme.bgEnd);
     root.style.setProperty('--theme-card-bg', activeTheme.cardBg);
     root.style.setProperty('--theme-text-color', activeTheme.textColor);
     root.style.setProperty('--theme-accent', activeTheme.accent);

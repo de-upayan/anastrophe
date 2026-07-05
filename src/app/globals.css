@@ -1,15 +1,18 @@
 @import url('https://fonts.googleapis.com/css2?family=Bitcount+Prop+Single:wght@100;200;300;400;500;600;700;800;900&display=swap');
 
 :root {
-  --theme-bg-dark: #221914;
+  --theme-bg-dark: #d5be9b;
+  --theme-bg-rgb: 213, 190, 155;
+  --theme-bg-start: #e1d2be;
+  --theme-bg-end: #9c8465;
   --theme-card-bg: #d2b584;
-  --theme-text-color: #e5dac9;
+  --theme-text-color: #221914;
   --theme-accent: #bca57a;
-  --theme-mandala-filter: invert(50%) sepia(25%) saturate(800%) hue-rotate(345deg) opacity(0.05);
+  --theme-mandala-filter: sepia(30%) saturate(600%) hue-rotate(345deg) opacity(0.04);
 
   --bg-color: var(--theme-card-bg);
   --text-color: var(--theme-text-color);
-  --border-color: rgba(255, 255, 255, 0.08);
+  --border-color: rgba(120, 120, 120, 0.15);
   --primary: var(--theme-accent);
   --font-family: 'Bitcount Prop Single', sans-serif;
 }
@@ -21,7 +24,7 @@
 }
 
 body {
-  background: linear-gradient(135deg, #000000 0%, var(--theme-bg-dark) 100%);
+  background: var(--theme-bg-dark);
   color: var(--text-color);
   font-family: var(--font-family);
   min-height: 100vh;
@@ -45,12 +48,17 @@ body {
 
 .mandala {
   position: absolute;
-  background-image: url('/mandala.svg');
+  background-image: url('/mandala.webp');
   background-repeat: no-repeat;
   background-size: contain;
   background-position: center;
   filter: var(--theme-mandala-filter);
   transition: filter 1s ease;
+  
+  /* Hardware compositor layer promotion */
+  will-change: transform;
+  backface-visibility: hidden;
+  transform: translate3d(0, 0, 0);
 }
 
 /* Left side: one massive mandala centered at the left edge */
@@ -136,11 +144,11 @@ body {
   top: 0;
   width: 320px;
   height: 100vh;
-  background: rgba(13, 10, 9, 0.97);
-  backdrop-filter: blur(15px);
+  background: var(--theme-bg-dark);
   -webkit-backdrop-filter: blur(15px);
-  border-left: 1px solid rgba(255, 255, 255, 0.08);
-  box-shadow: -15px 0 45px rgba(0, 0, 0, 0.45);
+  backdrop-filter: blur(15px);
+  border-left: 1px solid rgba(120, 120, 120, 0.15);
+  box-shadow: -15px 0 45px rgba(0, 0, 0, 0.15);
   z-index: 700;
   padding: 2.5rem 2rem;
   display: flex;
@@ -158,7 +166,7 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  border-bottom: 1px solid rgba(120, 120, 120, 0.15);
   padding-bottom: 1.2rem;
 }
 
@@ -197,8 +205,8 @@ body {
   display: flex;
   align-items: center;
   gap: 1.2rem;
-  background: rgba(255, 255, 255, 0.02);
-  border: 1px solid rgba(255, 255, 255, 0.04);
+  background: rgba(120, 120, 120, 0.05);
+  border: 1px solid rgba(120, 120, 120, 0.1);
   padding: 1rem 1.2rem;
   border-radius: 12px;
   cursor: pointer;
@@ -209,12 +217,12 @@ body {
 }
 
 .global-theme-option:hover {
-  background: rgba(255, 255, 255, 0.06);
-  border-color: rgba(255, 255, 255, 0.15);
+  background: rgba(120, 120, 120, 0.1);
+  border-color: rgba(120, 120, 120, 0.2);
 }
 
 .global-theme-option.theme-active {
-  background: rgba(255, 255, 255, 0.08) !important;
+  background: rgba(120, 120, 120, 0.15) !important;
   border-color: var(--theme-text-color) !important;
 }
 

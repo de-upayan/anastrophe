@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>The Ambigram Gallery</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bitcount+Prop+Single:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-color: #f7f5f2;          /* Warm minimalist parchment */
+      --text-color: #2b2622;        /* Soft charcoal/espresso */
+      --border-color: rgba(43, 38, 34, 0.1);
+      --font-family: 'Bitcount Prop Single', sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background: radial-gradient(circle at center, #fbfaf8 30%, #e8decb 100%);
+      color: var(--text-color);
+      font-family: var(--font-family);
+      min-height: 100vh;
+      overflow-x: hidden;
+      position: relative;
+    }
+
+    /* Multi-layered background mandalas of varying sizes */
+    .mandala-bg-container {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: -1;
+      pointer-events: none;
+      overflow: hidden;
+    }
+
+    .mandala {
+      position: absolute;
+      background-image: url('1325327.svg');
+      background-repeat: no-repeat;
+      background-size: contain;
+      background-position: center;
+      filter: invert(15%) sepia(95%) saturate(7000%) hue-rotate(350deg) brightness(85%) contrast(110%);
+      opacity: 0.05;
+    }
+
+    /* Big central one, spinning slowly */
+    .mandala-center {
+      top: 50%;
+      left: 50%;
+      width: 125vh;
+      height: 125vh;
+      margin-top: -62.5vh;
+      margin-left: -62.5vh;
+      animation: spinClockwise 320s linear infinite;
+    }
+
+    /* Top-left corner: almost touches center */
+    .mandala-tl {
+      top: 0;
+      left: 0;
+      width: 90vh;
+      height: 90vh;
+      margin-top: -45vh;
+      margin-left: -45vh;
+      animation: spinCounter 240s linear infinite;
+      opacity: 0.04;
+    }
+
+    /* Top-right corner: almost touches center */
+    .mandala-tr {
+      top: 0;
+      right: 0;
+      width: 90vh;
+      height: 90vh;
+      margin-top: -45vh;
+      margin-right: -45vh;
+      animation: spinClockwise 240s linear infinite;
+      opacity: 0.04;
+    }
+
+    /* Bottom-left corner: almost touches center */
+    .mandala-bl {
+      bottom: 0;
+      left: 0;
+      width: 90vh;
+      height: 90vh;
+      margin-bottom: -45vh;
+      margin-left: -45vh;
+      animation: spinClockwise 240s linear infinite;
+      opacity: 0.04;
+    }
+
+    /* Bottom-right corner: almost touches center */
+    .mandala-br {
+      bottom: 0;
+      right: 0;
+      width: 90vh;
+      height: 90vh;
+      margin-bottom: -45vh;
+      margin-right: -45vh;
+      animation: spinCounter 240s linear infinite;
+      opacity: 0.04;
+    }
+
+    @keyframes spinClockwise {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+    @keyframes spinCounter {
+      from { transform: rotate(360deg); }
+      to { transform: rotate(0deg); }
+    }
+
+    /* Temporary top navigation helper for mockup navigation */
+    .mockup-nav {
+      display: flex;
+      justify-content: center;
+      gap: 2rem;
+      padding: 2rem 0;
+      border-bottom: 1px solid var(--border-color);
+      max-width: 600px;
+      margin: 0 auto;
+      position: relative;
+      z-index: 10;
+    }
+
+    .mockup-nav a {
+      color: var(--text-color);
+      text-decoration: none;
+      font-size: 1.15rem;
+      font-weight: 500;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      opacity: 0.3;
+      transition: opacity 0.3s ease;
+    }
+
+    .mockup-nav a:hover, .mockup-nav a.active {
+      opacity: 0.8;
+    }
+
+    /* Gallery Grid: Spaced-out, raw floating designs */
+    .gallery-container {
+      max-width: 1000px;
+      margin: 4rem auto 6rem;
+      padding: 0 2rem;
+      position: relative;
+      z-index: 5;
+    }
+
+    .gallery-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 3.5rem;
+    }
+
+    .art-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      cursor: pointer;
+      position: relative;
+    }
+
+    .art-img-wrapper {
+      width: 100%;
+      aspect-ratio: 1/1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(43, 38, 34, 0.02);
+      border-radius: 4px;
+      overflow: hidden;
+      transition: background-color 0.4s ease;
+    }
+
+    .art-item:hover .art-img-wrapper {
+      background-color: rgba(43, 38, 34, 0.04);
+    }
+
+    .art-img {
+      max-width: 80%;
+      max-height: 80%;
+      object-fit: contain;
+      transition: transform 0.6s cubic-bezier(0.25, 1, 0.5, 1);
+    }
+
+    .art-item:hover .art-img {
+      transform: scale(1.04);
+    }
+
+    .art-caption {
+      margin-top: 1rem;
+      font-size: 1.25rem;
+      font-weight: 300;
+      letter-spacing: 0.15em;
+      text-transform: lowercase;
+      opacity: 0.4;
+      transition: opacity 0.3s ease;
+    }
+
+    .art-item:hover .art-caption {
+      opacity: 0.8;
+    }
+
+    /* Full-screen Viewer Modal Overlay */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(247, 245, 242, 0.98);
+      z-index: 1000;
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      transition: opacity 0.4s ease;
+    }
+
+    .modal-overlay.show {
+      display: flex;
+      opacity: 1;
+    }
+
+    .close-btn {
+      position: absolute;
+      top: 2rem;
+      right: 3rem;
+      background: none;
+      border: none;
+      color: var(--text-color);
+      font-family: var(--font-family);
+      font-size: 1.15rem;
+      font-weight: 300;
+      letter-spacing: 0.15em;
+      text-transform: lowercase;
+      cursor: pointer;
+      opacity: 0.4;
+      transition: opacity 0.3s ease;
+      z-index: 1010;
+    }
+
+    .close-btn:hover {
+      opacity: 0.9;
+    }
+
+    /* Centered Ambigram in Modal */
+    .modal-viewer {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      position: relative;
+    }
+
+    .viewer-tab-content {
+      width: 100%;
+      height: 100%;
+      display: none;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .viewer-tab-content.active {
+      display: flex;
+    }
+
+    .modal-img-wrapper {
+      position: relative;
+      width: 60vh;
+      height: 60vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+    }
+
+    .modal-img {
+      max-width: 100%;
+      max-height: 100%;
+      object-fit: contain;
+      transition: transform 1.4s cubic-bezier(0.25, 1, 0.5, 1);
+    }
+
+    .modal-img.rotated {
+      transform: rotate(180deg);
+    }
+
+    .spin-hint {
+      position: absolute;
+      bottom: -3rem;
+      font-size: 1.05rem;
+      font-weight: 300;
+      letter-spacing: 0.15em;
+      text-transform: lowercase;
+      opacity: 0.35;
+      text-align: center;
+      width: 100%;
+      pointer-events: none;
+    }
+
+    .video-player {
+      width: 80%;
+      height: 80%;
+      max-width: 1000px;
+      object-fit: contain;
+      background: transparent;
+    }
+
+    /* Modal bottom tab-links */
+    .modal-controls {
+      position: absolute;
+      bottom: 3rem;
+      display: flex;
+      gap: 3rem;
+      z-index: 1010;
+    }
+
+    .control-link {
+      background: none;
+      border: none;
+      color: var(--text-color);
+      font-family: var(--font-family);
+      font-size: 1.15rem;
+      font-weight: 300;
+      letter-spacing: 0.15em;
+      text-transform: lowercase;
+      cursor: pointer;
+      opacity: 0.35;
+      transition: all 0.4s ease;
+      padding: 0.5rem;
+    }
+
+    .control-link:hover {
+      opacity: 0.9;
+      letter-spacing: 0.25em;
+    }
+
+    .control-link.active {
+      opacity: 0.8;
+      border-bottom: 1px solid var(--border-color);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Floating multi-size background mandala watermarks -->
+  <div class="mandala-bg-container">
+    <div class="mandala mandala-center"></div>
+    <div class="mandala mandala-tl"></div>
+    <div class="mandala mandala-tr"></div>
+    <div class="mandala mandala-bl"></div>
+    <div class="mandala mandala-br"></div>
+  </div>
+
+  <!-- Mockup Navigation Helper -->
+  <nav class="mockup-nav">
+    <a href="showcase_mockup.html" class="active">Showcase</a>
+    <a href="visitor_mockup.html">Visitor View</a>
+    <a href="admin_mockup.html">Admin</a>
+  </nav>
+
+  <main class="gallery-container">
+    <div class="gallery-grid">
+      <!-- Art Item 1 -->
+      <div class="art-item" onclick="openModal('Ambivalence')">
+        <div class="art-img-wrapper">
+          <img src="images.svg" alt="Ambivalence design" class="art-img">
+        </div>
+        <span class="art-caption">ambivalence</span>
+      </div>
+
+      <!-- Art Item 2 -->
+      <div class="art-item" onclick="openModal('Symmetry & Art')">
+        <div class="art-img-wrapper">
+          <img src="images.svg" alt="Symmetry & Art design" class="art-img">
+        </div>
+        <span class="art-caption">symmetry & art</span>
+      </div>
+
+      <!-- Art Item 3 -->
+      <div class="art-item" onclick="openModal('Illusionist')">
+        <div class="art-img-wrapper">
+          <img src="images.svg" alt="Illusionist design" class="art-img">
+        </div>
+        <span class="art-caption">illusionist</span>
+      </div>
+    </div>
+  </main>
+
+  <!-- Full-screen modal overlay -->
+  <div class="modal-overlay" id="modalOverlay">
+    <button class="close-btn" onclick="closeModal()">close</button>
+    
+    <div class="modal-viewer">
+      <!-- Image spin tab -->
+      <div class="viewer-tab-content active" id="tabContentImg">
+        <div class="modal-img-wrapper" onclick="toggleRotation()">
+          <img src="images.svg" alt="Ambigram Details" class="modal-img" id="modalImg">
+          <div class="spin-hint" id="spinHint">click design to rotate 180°</div>
+        </div>
+      </div>
+
+      <!-- Video tab -->
+      <div class="viewer-tab-content" id="tabContentVideo">
+        <video class="video-player" id="timelapseVideo" loop playsinline controls>
+          <source src="timelapse.mp4" type="video/mp4">
+        </video>
+      </div>
+    </div>
+
+    <!-- Tab options at the bottom of the modal -->
+    <div class="modal-controls">
+      <button class="control-link active" id="tabBtnImg" onclick="switchViewerTab('img')">interactive viewer</button>
+      <button class="control-link" id="tabBtnVideo" onclick="switchViewerTab('video')">timelapse video</button>
+    </div>
+  </div>
+
+  <script>
+    const modalOverlay = document.getElementById('modalOverlay');
+    const modalImg = document.getElementById('modalImg');
+    const timelapseVideo = document.getElementById('timelapseVideo');
+    const spinHint = document.getElementById('spinHint');
+
+    function openModal(title) {
+      modalImg.classList.remove('rotated');
+      spinHint.innerText = "click design to rotate 180°";
+      switchViewerTab('img');
+
+      modalOverlay.style.display = 'flex';
+      setTimeout(() => {
+        modalOverlay.classList.add('show');
+      }, 50);
+    }
+
+    function closeModal() {
+      modalOverlay.classList.remove('show');
+      timelapseVideo.pause();
+      setTimeout(() => {
+        modalOverlay.style.display = 'none';
+      }, 500);
+    }
+
+    modalOverlay.addEventListener('click', (e) => {
+      if (e.target === modalOverlay) {
+        closeModal();
+      }
+    });
+
+    // Rotation Control
+    let isRotated = false;
+    function toggleRotation() {
+      isRotated = !isRotated;
+      if (isRotated) {
+        modalImg.classList.add('rotated');
+        spinHint.innerText = "click to spin back to 0°";
+      } else {
+        modalImg.classList.remove('rotated');
+        spinHint.innerText = "click design to rotate 180°";
+      }
+    }
+
+    // Media Tab Control
+    function switchViewerTab(tab) {
+      const tabBtnImg = document.getElementById('tabBtnImg');
+      const tabBtnVideo = document.getElementById('tabBtnVideo');
+      const tabContentImg = document.getElementById('tabContentImg');
+      const tabContentVideo = document.getElementById('tabContentVideo');
+
+      if (tab === 'img') {
+        tabBtnImg.classList.add('active');
+        tabBtnVideo.classList.remove('active');
+        tabContentImg.classList.add('active');
+        tabContentVideo.classList.remove('active');
+        timelapseVideo.pause();
+      } else {
+        tabBtnImg.classList.remove('active');
+        tabBtnVideo.classList.add('active');
+        tabContentImg.classList.remove('active');
+        tabContentVideo.classList.add('active');
+        timelapseVideo.currentTime = 0;
+        timelapseVideo.play();
+      }
+    }
+  </script>
+</body>
+</html>

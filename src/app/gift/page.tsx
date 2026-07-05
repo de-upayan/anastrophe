@@ -3,7 +3,12 @@
 import { useState, useEffect, useRef, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { useTheme } from '@/context/ThemeContext';
+import { Meddon, Eagle_Lake } from 'next/font/google';
+import AnimatedLogo from '@/components/AnimatedLogo';
 import styles from './page.module.css';
+
+const meddon = Meddon({ weight: '400', subsets: ['latin'] });
+const eagleLake = Eagle_Lake({ weight: '400', subsets: ['latin'] });
 
 interface AmbigramItem {
   id: string;
@@ -124,6 +129,17 @@ function GiftPageContent() {
   const [toastMessage, setToastMessage] = useState('');
   const [isToastVisible, setIsToastVisible] = useState(false);
 
+  // Landing Intro Animation States
+  const [showHi, setShowHi] = useState(false);
+  const [showIm, setShowIm] = useState(false);
+  const [startDrawing, setStartDrawing] = useState(false);
+  const [isDrawn, setIsDrawn] = useState(false);
+  const [showICreate, setShowICreate] = useState(false);
+  const [isFlipped, setIsFlipped] = useState(false);
+  const [showAmbigrams, setShowAmbigrams] = useState(false);
+  const [isSkipped, setIsSkipped] = useState(false);
+  const landingTimersRef = useRef<NodeJS.Timeout[]>([]);
+
   const videoRef = useRef<HTMLVideoElement>(null);
 
   // Sync with API
@@ -187,13 +203,67 @@ function GiftPageContent() {
     loadActiveGift();
   }, [recipientParam, artIdParam, searchParams]);
 
-  const triggerReveal = () => {
+  // Skip / Instant slide out function
+  const handleSkipIntro = () => {
+    setIsSkipped(true);
+    landingTimersRef.current.forEach((t) => clearTimeout(t));
+    setShowHi(true);
+    setShowIm(true);
+    setStartDrawing(true);
+    setIsDrawn(true);
+    setShowICreate(true);
+    setIsFlipped(true);
+    setShowAmbigrams(true);
+    
+    // Slide out the intro cover instantly
     setIsGiftOpen(true);
-    setTimeout(() => {
-      setIsRevealed(true);
-      triggerGiftReveal();
-    }, 400);
+    setIsRevealed(true);
+    triggerGiftReveal();
   };
+
+  // Play landing intro animation sequentially
+  useEffect(() => {
+    if (isSkipped || isGiftOpen) return;
+
+    const timers = [
+      setTimeout(() => setShowHi(true), 300),
+      setTimeout(() => setShowIm(true), 1300),
+      setTimeout(() => setStartDrawing(true), 2300),
+      setTimeout(() => setIsDrawn(true), 4300),
+      setTimeout(() => setShowICreate(true), 4600),
+      setTimeout(() => setIsFlipped(true), 5800),
+      setTimeout(() => setShowAmbigrams(true), 8300),
+      // Automatically slide to gift view 1.5 seconds after "ambigrams" fades in
+      setTimeout(() => {
+        setIsGiftOpen(true);
+        setIsRevealed(true);
+        triggerGiftReveal();
+      }, 9800),
+    ];
+
+    landingTimersRef.current = timers;
+
+    return () => {
+      timers.forEach((t) => clearTimeout(t));
+    };
+  }, [isSkipped, isGiftOpen]);
+
+  // Listen for user click/keypress to skip the intro animation
+  useEffect(() => {
+    if (isGiftOpen) return;
+
+    const handleWindowInteraction = () => {
+      handleSkipIntro();
+    };
+
+    window.addEventListener('click', handleWindowInteraction);
+    window.addEventListener('keydown', handleWindowInteraction);
+
+    return () => {
+      window.removeEventListener('click', handleWindowInteraction);
+      window.removeEventListener('keydown', handleWindowInteraction);
+    };
+  }, [isGiftOpen, isSkipped]);
 
   const toggleRotation = () => {
     setIsRotated(!isRotated);
@@ -255,77 +325,116 @@ function GiftPageContent() {
   if (!activeItem) return null;
 
   return (
-    <div className={styles.pageWrapper}>
+    <>
+      <div className={styles.pageWrapper}>
 
-      {/* Premium Gift Intro Overlay */}
-      <div className={`${styles.giftOverlay} ${isGiftOpen ? styles.hidden : ''}`}>
-        <div className={styles.giftBox}>
-          <div className={styles.giftSeal}></div>
-          <h2 className={styles.giftTitle}>You Have Received a Custom Ambigram</h2>
-          <p className={styles.giftSubtitle}>{recipientText}</p>
-          <button className={styles.revealBtn} onClick={triggerReveal}>Reveal</button>
-        </div>
-      </div>
+        {/* Premium Gift Intro Overlay */}
+        <div className={`${styles.giftOverlay} ${isGiftOpen ? styles.hidden : ''}`}>
+          {/* Floating background mandalas inside overlay so they show behind the text! */}
+          <div className="mandala-bg-container" style={{ position: 'absolute', zIndex: 1, pointerEvents: 'none' }}>
+            <div className="mandala mandala-left"></div>
+            <div className="mandala mandala-rt"></div>
+            <div className="mandala mandala-rb"></div>
+          </div>
 
-      {/* Top Spacer to balance vertical centering */}
-      <div className={styles.topSpacer} />
-
-      {/* The centerpiece 3D Flip Card */}
-      <main className={styles.artContainer}>
-        <div className={`${styles.flipContainer} ${isRevealed ? styles.revealed : ''}`}>
-          <div className={`${styles.flipCardInner} ${isTimelapseOpen ? styles.flipped : ''}`}>
+          <div className={styles.contentWrapper} style={{ position: 'relative', zIndex: 2 }}>
+            <h1 className={styles.introText}>
+              <span className={`${styles.scriptText} ${showHi ? styles.show : ''} ${meddon.className}`}>
+                Hi!
+              </span>
+              <span className={`${styles.scriptText} ${showIm ? styles.show : ''} ${meddon.className}`}>
+                I&apos;m
+              </span>
+            </h1>
             
-            {/* Front Side: SVG Ambigram Artwork */}
-            <div className={styles.cardFront}>
-              <img 
-                src={activeItem.imageSrc} 
-                alt="Ambigram Artwork" 
-                className={`${styles.ambigramImg} ${isRotated ? styles.rotated : ''}`} 
-                onClick={toggleRotation}
-                title="Click design to rotate 180°"
+            <div className={styles.logoWrapper}>
+              <AnimatedLogo 
+                startDrawing={startDrawing}
+                isDrawn={isDrawn}
+                isFlipped={isFlipped}
               />
-              <div className={styles.rotateHint}>Click design to rotate 180°</div>
             </div>
 
-            {/* Back Side: Embedded MP4 Timelapse Video */}
-            <div className={styles.cardBack}>
-              <video 
-                ref={videoRef}
-                className={styles.videoPlayer} 
-                loop 
-                playsInline 
-                controls
-              >
-                <source src={activeItem.timelapseSrc} type="video/mp4" />
-              </video>
-            </div>
-
+            <p className={styles.subText}>
+              <span className={`${styles.scriptText} ${showICreate ? styles.show : ''} ${meddon.className}`}>
+                I like 
+              </span>
+              <span className={`${styles.ambigramsText} ${showAmbigrams ? styles.show : ''} ${eagleLake.className}`}>
+                ambigrams
+              </span>
+            </p>
           </div>
         </div>
-      </main>
 
-      {/* Bottom Section centering the footer controls in remaining space */}
-      <div className={`${styles.bottomSection} ${isRevealed ? styles.revealed : ''}`}>
-        <footer className={styles.artControls}>
-          <button className={`${styles.controlLink} ${styles.linkLeft}`} onClick={toggleTimelapse}>
-            {isTimelapseOpen ? 'Show Artwork' : 'Play Timelapse'}
-          </button>
-          {activeItem.isShareable && (
-            <>
-              <span className={styles.controlDivider}>•</span>
-              <button className={`${styles.controlLink} ${styles.linkRight}`} onClick={openDownload}>
-                Download Assets
-              </button>
-            </>
-          )}
-        </footer>
+        {/* Top Spacer to balance vertical centering */}
+        <div className={styles.topSpacer} />
+
+        {/* The centerpiece 3D Flip Card */}
+        <main className={styles.artContainer}>
+          <h2 className={`${styles.giftHeader} ${isRevealed ? styles.show : ''} ${meddon.className}`}>
+            Here&apos;s one for you
+          </h2>
+          <div className={`${styles.flipContainer} ${isRevealed ? styles.revealed : ''}`}>
+            <div className={`${styles.flipCardInner} ${isTimelapseOpen ? styles.flipped : ''}`}>
+              
+              {/* Front Side: SVG Ambigram Artwork */}
+              <div className={styles.cardFront}>
+                <img 
+                  src={activeItem.imageSrc} 
+                  alt="Ambigram Artwork" 
+                  className={`${styles.ambigramImg} ${isRotated ? styles.rotated : ''}`} 
+                  onClick={toggleRotation}
+                  title="Click design to rotate 180°"
+                />
+                <div className={styles.rotateHint}>Click design to rotate 180°</div>
+              </div>
+
+              {/* Back Side: Embedded MP4 Timelapse Video */}
+              <div className={styles.cardBack}>
+                <video 
+                  ref={videoRef}
+                  className={styles.videoPlayer} 
+                  loop 
+                  playsInline 
+                  controls
+                >
+                  <source src={activeItem.timelapseSrc} type="video/mp4" />
+                </video>
+              </div>
+
+            </div>
+          </div>
+        </main>
+
+        {/* Bottom Section centering the footer controls in remaining space */}
+        <div className={`${styles.bottomSection} ${isRevealed ? styles.revealed : ''}`}>
+          <footer className={styles.artControls}>
+            <button className={`${styles.controlLink} ${styles.linkLeft}`} onClick={toggleTimelapse}>
+              {isTimelapseOpen ? 'Show Artwork' : 'Play Timelapse'}
+            </button>
+            {activeItem.isShareable && (
+              <>
+                <span className={styles.controlDivider}>•</span>
+                <button className={`${styles.controlLink} ${styles.linkRight}`} onClick={openDownload}>
+                  Download Assets
+                </button>
+              </>
+            )}
+          </footer>
+        </div>
+
+        {/* Toast notifications */}
+        <div className={`${styles.toast} ${isToastVisible ? styles.show : ''}`}>
+          <span>{toastMessage}</span>
+        </div>
       </div>
 
-
-
-      {/* Download Password Overlay */}
+      {/* Download Password Overlay - Rendered outside pageWrapper to bypass Chromium's overflow:hidden backdrop-filter bug! */}
       {isPasswordOpen && (
         <div className={`${styles.passwordOverlay} ${isPasswordVisible ? styles.show : ''}`}>
+          {/* Isolated backdrop div for premium frosted glass effect */}
+          <div className={styles.backdrop} />
+
           <div className={styles.passwordForm}>
             <label htmlFor="pwdInput">Enter Password</label>
             <input 
@@ -351,12 +460,7 @@ function GiftPageContent() {
           </div>
         </div>
       )}
-
-      {/* Toast notifications */}
-      <div className={`${styles.toast} ${isToastVisible ? styles.show : ''}`}>
-        <span>{toastMessage}</span>
-      </div>
-    </div>
+    </>
   );
 }
 

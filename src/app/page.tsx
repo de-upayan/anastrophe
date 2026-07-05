@@ -1,189 +1,141 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
-import Navigation from '@/components/Navigation';
+import React, { useState, useEffect, useRef } from 'react';
+import AnimatedLogo from '@/components/AnimatedLogo';
+import Link from 'next/link';
+import { Meddon, Eagle_Lake } from 'next/font/google';
 import styles from './page.module.css';
 
-interface AmbigramItem {
-  id: string;
-  title: string;
-  recipient?: string;
-  description?: string;
-  imageSrc: string;
-  timelapseSrc: string;
-  isPublic: boolean;
-  isShareable: boolean;
-}
+// Load cursive, high-end calligraphy fonts from Google Fonts
+const meddon = Meddon({
+  weight: '400',
+  subsets: ['latin'],
+  display: 'swap',
+});
 
-const DEFAULT_ITEMS: AmbigramItem[] = [
-  {
-    id: 'ambivalence',
-    title: 'ambivalence',
-    imageSrc: '/images.svg',
-    timelapseSrc: '/timelapse.mp4',
-    isPublic: true,
-    isShareable: true,
-    description: 'a hand-drawn ambigram reflecting duality and fluid perception.'
-  },
-  {
-    id: 'symmetry-art',
-    title: 'symmetry & art',
-    imageSrc: '/images.svg',
-    timelapseSrc: '/timelapse.mp4',
-    isPublic: true,
-    isShareable: true,
-    description: 'exploring mathematical symmetry through hand-lettered calligraphy.'
-  },
-  {
-    id: 'illusionist',
-    title: 'illusionist',
-    imageSrc: '/images.svg',
-    timelapseSrc: '/timelapse.mp4',
-    isPublic: true,
-    isShareable: true,
-    description: 'a visual riddle that shifts identities when viewed from different angles.'
-  }
-];
+const eagleLake = Eagle_Lake({
+  weight: '400',
+  subsets: ['latin'],
+  display: 'swap',
+});
 
-export default function ShowcasePage() {
-  const [items, setItems] = useState<AmbigramItem[]>([]);
-  const [activeItem, setActiveItem] = useState<AmbigramItem | null>(null);
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [isModalVisible, setIsModalVisible] = useState(false);
-  const [activeTab, setActiveTab] = useState<'img' | 'video'>('img');
-  const [isRotated, setIsRotated] = useState(false);
+export default function LandingPage() {
+  const [showHi, setShowHi] = useState(false);
+  const [showIm, setShowIm] = useState(false);
+  const [startDrawing, setStartDrawing] = useState(false);
+  const [isDrawn, setIsDrawn] = useState(false);
+  const [showICreate, setShowICreate] = useState(false);
+  const [isFlipped, setIsFlipped] = useState(false);
+  const [showAmbigrams, setShowAmbigrams] = useState(false);
+  const [showProceed, setShowProceed] = useState(false);
+  const [isSkipped, setIsSkipped] = useState(false);
 
-  const videoRef = useRef<HTMLVideoElement>(null);
+  const timersRef = useRef<NodeJS.Timeout[]>([]);
 
-  // Fetch public items from API
+  // Skip mechanism triggered by clicking anywhere or pressing any key
   useEffect(() => {
-    async function loadShowcase() {
-      try {
-        const res = await fetch('/api/ambigrams?public=true');
-        const data = await res.json();
-        if (data.success && data.ambigrams) {
-          setItems(data.ambigrams);
-        } else {
-          setItems(DEFAULT_ITEMS);
-        }
-      } catch (e) {
-        console.error('Failed to load showcase ambigrams:', e);
-        setItems(DEFAULT_ITEMS);
+    const handleInteraction = (e: MouseEvent | KeyboardEvent) => {
+      // Don't skip if the user clicked the proceed showcase link directly
+      if (e.target && (e.target as HTMLElement).closest(`.${styles.proceedLink}`)) {
+        return;
       }
-    }
-    loadShowcase();
+      
+      setIsSkipped(true);
+      
+      // Stop all timers
+      timersRef.current.forEach((t) => clearTimeout(t));
+      timersRef.current = [];
+      
+      // Instantly reveal all states
+      setShowHi(true);
+      setShowIm(true);
+      setStartDrawing(true);
+      setIsDrawn(true);
+      setShowICreate(true);
+      setIsFlipped(true);
+      setShowAmbigrams(true);
+      setShowProceed(true);
+    };
+
+    window.addEventListener('click', handleInteraction);
+    window.addEventListener('keydown', handleInteraction);
+
+    return () => {
+      window.removeEventListener('click', handleInteraction);
+      window.removeEventListener('keydown', handleInteraction);
+    };
   }, []);
 
-  const openModal = (item: AmbigramItem) => {
-    setActiveItem(item);
-    setIsRotated(false);
-    setActiveTab('img');
-    setIsModalOpen(true);
-    setTimeout(() => {
-      setIsModalVisible(true);
-    }, 50);
-  };
+  useEffect(() => {
+    if (isSkipped) return;
 
-  const closeModal = () => {
-    setIsModalVisible(false);
-    if (videoRef.current) {
-      videoRef.current.pause();
-    }
-    setTimeout(() => {
-      setIsModalOpen(false);
-      setActiveItem(null);
-    }, 450);
-  };
+    const timers = [
+      setTimeout(() => setShowHi(true), 300),
+      setTimeout(() => setShowIm(true), 1300),
+      setTimeout(() => setStartDrawing(true), 2300),
+      setTimeout(() => setIsDrawn(true), 4300),
+      setTimeout(() => setShowICreate(true), 4600),
+      setTimeout(() => setIsFlipped(true), 5800),
+      setTimeout(() => setShowAmbigrams(true), 8300),
+      setTimeout(() => setShowProceed(true), 9300),
+    ];
 
-  const toggleRotation = () => {
-    setIsRotated(!isRotated);
-  };
+    timersRef.current = timers;
 
-  const switchViewerTab = (tab: 'img' | 'video') => {
-    setActiveTab(tab);
-    if (tab === 'img') {
-      if (videoRef.current) {
-        videoRef.current.pause();
-      }
-    } else {
-      if (videoRef.current) {
-        videoRef.current.currentTime = 0;
-        videoRef.current.play().catch(() => {});
-      }
-    }
-  };
+    return () => {
+      timers.forEach((t) => clearTimeout(t));
+    };
+  }, [isSkipped]);
 
   return (
-    <>
-      <Navigation />
-
-      <main className={styles.galleryContainer}>
-        <div className={styles.galleryGrid}>
-          {items.map((item) => (
-            <div key={item.id} className={styles.artItem} onClick={() => openModal(item)}>
-              <div className={styles.artImgWrapper}>
-                <img src={item.imageSrc} alt={`${item.title} design`} className={styles.artImg} />
-              </div>
-              <span className={styles.artCaption}>{item.title}</span>
-            </div>
-          ))}
+    <main className={`${styles.landingContainer} ${isSkipped ? styles.skipped : ''}`}>
+      <div className={styles.contentWrapper}>
+        <h1 className={styles.introText}>
+          <span className={`${styles.scriptText} ${showHi ? styles.show : ''} ${meddon.className}`}>
+            Hi!
+          </span>
+          <span className={`${styles.scriptText} ${showIm ? styles.show : ''} ${meddon.className}`}>
+            I&apos;m
+          </span>
+        </h1>
+        
+        <div className={styles.logoWrapper}>
+          <AnimatedLogo 
+            startDrawing={startDrawing}
+            isDrawn={isDrawn}
+            isFlipped={isFlipped}
+          />
         </div>
-      </main>
 
-      {isModalOpen && activeItem && (
-        <div 
-          className={`${styles.modalOverlay} ${isModalVisible ? styles.show : ''}`}
-          onClick={(e) => {
-            if (e.target === e.currentTarget) closeModal();
-          }}
-        >
-          <button className={styles.closeBtn} onClick={closeModal}>Close</button>
+        <p className={styles.subText}>
+          <span className={`${styles.scriptText} ${showICreate ? styles.show : ''} ${meddon.className}`}>
+            I like 
+          </span>
+          <span className={`${styles.ambigramsText} ${showAmbigrams ? styles.show : ''} ${eagleLake.className}`}>
+            ambigrams
+          </span>
+        </p>
+      </div>
 
-          <div className={styles.modalViewer}>
-            {/* Image viewer tab */}
-            <div className={`${styles.viewerTabContent} ${activeTab === 'img' ? styles.active : ''}`}>
-              <div className={styles.modalImgWrapper} onClick={toggleRotation}>
-                <img 
-                  src={activeItem.imageSrc} 
-                  alt={`${activeItem.title} ambigram`} 
-                  className={`${styles.modalImg} ${isRotated ? styles.rotated : ''}`} 
-                />
-                <div className={styles.spinHint}>
-                  {isRotated ? 'Click to spin back to 0°' : 'Click design to rotate 180°'}
-                </div>
-              </div>
-            </div>
-
-            {/* Video timelapse tab */}
-            <div className={`${styles.viewerTabContent} ${activeTab === 'video' ? styles.active : ''}`}>
-              <video 
-                ref={videoRef}
-                className={styles.videoPlayer} 
-                loop 
-                playsInline 
-                controls
-              >
-                <source src={activeItem.timelapseSrc} type="video/mp4" />
-              </video>
-            </div>
-          </div>
-
-          <div className={styles.modalControls}>
-            <button 
-              className={`${styles.controlLink} ${activeTab === 'img' ? styles.active : ''}`}
-              onClick={() => switchViewerTab('img')}
-            >
-              Interactive Viewer
-            </button>
-            <button 
-              className={`${styles.controlLink} ${activeTab === 'video' ? styles.active : ''}`}
-              onClick={() => switchViewerTab('video')}
-            >
-              Timelapse Video
-            </button>
-          </div>
+      <Link href="/showcase" className={`${styles.proceedLink} ${showProceed ? styles.show : ''}`} title="Explore Ambigram Showcase">
+        <span className={styles.proceedText}>Enter Showcase</span>
+        <div className={styles.proceedCircle}>
+          <svg 
+            className={styles.arrowSvg} 
+            width="20" 
+            height="20" 
+            viewBox="0 0 24 24" 
+            fill="none" 
+            stroke="currentColor" 
+            strokeWidth="1.5" 
+            strokeLinecap="round" 
+            strokeLinejoin="round"
+          >
+            <line x1="5" y1="12" x2="19" y2="12"></line>
+            <polyline points="12 5 19 12 12 19"></polyline>
+          </svg>
         </div>
-      )}
-    </>
+      </Link>
+    </main>
   );
 }

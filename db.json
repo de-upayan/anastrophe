@@ -1,0 +1,37 @@
+[
+  {
+    "id": "ambivalence",
+    "title": "ambivalence",
+    "description": "reflected and rotated symmetry",
+    "imageSrc": "/art/ambivalence.svg",
+    "timelapseSrc": "/art/ambivalence_timelapse.mp4",
+    "isPublic": true,
+    "isShareable": true,
+    "password": "secret123",
+    "createdAt": "2026-06-27T19:41:52.597Z"
+  },
+  {
+    "id": "symmetry-art",
+    "title": "symmetry",
+    "recipient": "Alice",
+    "description": "specially crafted design exploring center symmetry",
+    "imageSrc": "/art/symmetry.svg",
+    "timelapseSrc": "/art/symmetry_timelapse.mp4",
+    "isPublic": true,
+    "isShareable": true,
+    "password": "secret123",
+    "createdAt": "2026-06-27T19:41:52.597Z"
+  },
+  {
+    "id": "illusionist",
+    "title": "illusionist",
+    "recipient": "Bob",
+    "description": "optical shift showing dynamic shapes",
+    "imageSrc": "/art/illusionist.svg",
+    "timelapseSrc": "/art/illusionist_timelapse.mp4",
+    "isPublic": true,
+    "isShareable": true,
+    "password": "secret123",
+    "createdAt": "2026-06-27T19:41:52.597Z"
+  }
+]

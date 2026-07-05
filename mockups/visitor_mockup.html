@@ -1,0 +1,612 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ambigram Art</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bitcount+Prop+Single:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-color: #f7f5f2;          /* Warm minimalist parchment */
+      --text-color: #2b2622;        /* Soft charcoal/espresso */
+      --border-color: rgba(43, 38, 34, 0.1);
+      --font-family: 'Bitcount Prop Single', sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background: radial-gradient(circle at center, #fbfaf8 30%, #e8decb 100%);
+      color: var(--text-color);
+      font-family: var(--font-family);
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      overflow: hidden;
+      position: relative;
+    }
+
+    /* Floating multi-size background mandala watermarks */
+    .mandala-bg-container {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: -1;
+      pointer-events: none;
+      overflow: hidden;
+    }
+
+    .mandala {
+      position: absolute;
+      background-image: url('1325327.svg');
+      background-repeat: no-repeat;
+      background-size: contain;
+      background-position: center;
+      filter: invert(15%) sepia(95%) saturate(7000%) hue-rotate(350deg) brightness(85%) contrast(110%);
+      opacity: 0.05;
+    }
+
+    /* Big central one, spinning slowly */
+    .mandala-center {
+      top: 50%;
+      left: 50%;
+      width: 125vh;
+      height: 125vh;
+      margin-top: -62.5vh;
+      margin-left: -62.5vh;
+      animation: spinClockwise 320s linear infinite;
+    }
+
+    /* Top-left corner: almost touches center */
+    .mandala-tl {
+      top: 0;
+      left: 0;
+      width: 90vh;
+      height: 90vh;
+      margin-top: -45vh;
+      margin-left: -45vh;
+      animation: spinCounter 240s linear infinite;
+      opacity: 0.04;
+    }
+
+    /* Top-right corner: almost touches center */
+    .mandala-tr {
+      top: 0;
+      right: 0;
+      width: 90vh;
+      height: 90vh;
+      margin-top: -45vh;
+      margin-right: -45vh;
+      animation: spinClockwise 240s linear infinite;
+      opacity: 0.04;
+    }
+
+    /* Bottom-left corner: almost touches center */
+    .mandala-bl {
+      bottom: 0;
+      left: 0;
+      width: 90vh;
+      height: 90vh;
+      margin-bottom: -45vh;
+      margin-left: -45vh;
+      animation: spinClockwise 240s linear infinite;
+      opacity: 0.04;
+    }
+
+    /* Bottom-right corner: almost touches center */
+    .mandala-br {
+      bottom: 0;
+      right: 0;
+      width: 90vh;
+      height: 90vh;
+      margin-bottom: -45vh;
+      margin-right: -45vh;
+      animation: spinCounter 240s linear infinite;
+      opacity: 0.04;
+    }
+
+    @keyframes spinClockwise {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+    @keyframes spinCounter {
+      from { transform: rotate(360deg); }
+      to { transform: rotate(0deg); }
+    }
+
+    /* The Centerpiece Ambigram Container & Wrapper */
+    .art-container {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      padding: 2rem;
+      z-index: 5;
+    }
+
+    .ambigram-wrapper {
+      opacity: 0;
+      transform: scale(0.25) rotate(-140deg);
+      transition: transform 2.2s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 1.8s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      height: 100%;
+    }
+
+    .ambigram-wrapper.revealed {
+      opacity: 1;
+      transform: scale(1) rotate(0deg);
+    }
+
+    .ambigram-img {
+      max-width: 52vh;
+      max-height: 52vh;
+      width: auto;
+      height: auto;
+      object-fit: contain;
+      cursor: pointer;
+      user-select: none;
+      /* Slow rotation transition when clicked by user */
+      transition: transform 1.4s cubic-bezier(0.25, 1, 0.5, 1);
+    }
+
+    .ambigram-img.rotated {
+      transform: rotate(180deg);
+    }
+
+    /* Ultra-Minimalist Utility Controls at the bottom */
+    .art-controls {
+      position: absolute;
+      bottom: 3rem;
+      display: flex;
+      gap: 3rem;
+      z-index: 10;
+      opacity: 0;
+      transition: opacity 1.6s ease 0.6s;
+    }
+
+    .art-controls.revealed {
+      opacity: 1;
+    }
+
+    .control-link {
+      background: none;
+      border: none;
+      color: var(--text-color);
+      font-family: var(--font-family);
+      font-size: 1.15rem;
+      font-weight: 300;
+      letter-spacing: 0.15em;
+      text-transform: lowercase;
+      cursor: pointer;
+      opacity: 0.35;
+      transition: all 0.4s ease;
+      padding: 0.5rem;
+    }
+
+    .control-link:hover {
+      opacity: 0.9;
+      letter-spacing: 0.25em;
+    }
+
+    /* Premium Gift Intro Overlay */
+    .gift-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: radial-gradient(circle at center, rgba(251, 250, 248, 0.98) 30%, rgba(232, 222, 203, 0.98) 100%);
+      z-index: 500;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: opacity 1.2s cubic-bezier(0.25, 1, 0.5, 1), visibility 1.2s;
+    }
+
+    .gift-overlay.hidden {
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+    }
+
+    .gift-box {
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 2.2rem;
+      max-width: 420px;
+      width: 90%;
+      animation: floatGift 6s ease-in-out infinite;
+    }
+
+    @keyframes floatGift {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
+    }
+
+    .gift-seal {
+      width: 50px;
+      height: 50px;
+      border: 1px solid var(--text-color);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0.25;
+      margin-bottom: 0.5rem;
+      position: relative;
+    }
+
+    .gift-seal::after {
+      content: '';
+      width: 26px;
+      height: 26px;
+      border: 1px solid var(--text-color);
+      transform: rotate(45deg);
+      position: absolute;
+    }
+
+    .gift-title {
+      font-size: 1.6rem;
+      font-weight: 300;
+      letter-spacing: 0.15em;
+      text-transform: lowercase;
+      opacity: 0.8;
+      line-height: 1.4;
+    }
+
+    .gift-subtitle {
+      font-size: 1.15rem;
+      font-weight: 300;
+      letter-spacing: 0.12em;
+      text-transform: lowercase;
+      opacity: 0.45;
+      margin-top: -1rem;
+    }
+
+    .reveal-btn {
+      background: none;
+      border: 1px solid var(--text-color);
+      color: var(--text-color);
+      font-family: var(--font-family);
+      font-size: 1.15rem;
+      font-weight: 400;
+      letter-spacing: 0.2em;
+      text-transform: lowercase;
+      padding: 0.9rem 2.6rem;
+      border-radius: 4px;
+      cursor: pointer;
+      opacity: 0.7;
+      transition: all 0.4s ease;
+      margin-top: 1rem;
+    }
+
+    .reveal-btn:hover {
+      opacity: 1;
+      background: var(--text-color);
+      color: var(--bg-color);
+      letter-spacing: 0.25em;
+      box-shadow: 0 15px 30px rgba(43, 38, 34, 0.1);
+    }
+
+    /* Full-screen Video Overlay for Timelapse */
+    .timelapse-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: var(--bg-color);
+      z-index: 200;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      transition: opacity 0.5s ease;
+    }
+
+    .timelapse-overlay.show {
+      display: flex;
+      opacity: 1;
+    }
+
+    .video-player {
+      width: 80%;
+      height: 80%;
+      max-width: 1000px;
+      object-fit: contain;
+      outline: none;
+    }
+
+    .close-overlay-btn {
+      position: absolute;
+      top: 2rem;
+      right: 3rem;
+      background: none;
+      border: none;
+      color: var(--text-color);
+      font-family: var(--font-family);
+      font-size: 1.15rem;
+      font-weight: 300;
+      letter-spacing: 0.15em;
+      text-transform: lowercase;
+      cursor: pointer;
+      opacity: 0.4;
+      transition: opacity 0.3s ease;
+    }
+
+    .close-overlay-btn:hover {
+      opacity: 0.9;
+    }
+
+    /* Minimalist Password Prompt Modal */
+    .password-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(247, 245, 242, 0.97);
+      z-index: 300;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      transition: opacity 0.4s ease;
+    }
+
+    .password-overlay.show {
+      display: flex;
+      opacity: 1;
+    }
+
+    .password-form {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1.5rem;
+      width: 90%;
+      max-width: 320px;
+    }
+
+    .password-form label {
+      font-size: 1.05rem;
+      font-weight: 400;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      opacity: 0.5;
+    }
+
+    .password-input {
+      background: none;
+      border: none;
+      border-bottom: 1px solid var(--border-color);
+      width: 100%;
+      padding: 0.8rem;
+      color: var(--text-color);
+      font-family: var(--font-family);
+      font-size: 1.5rem;
+      text-align: center;
+      transition: border-color 0.4s ease;
+    }
+
+    .password-input:focus {
+      outline: none;
+      border-color: var(--text-color);
+    }
+
+    .error-msg {
+      color: #b54f4f;
+      font-size: 1rem;
+      letter-spacing: 0.05em;
+      display: none;
+    }
+
+    .password-actions {
+      display: flex;
+      gap: 2rem;
+      margin-top: 1rem;
+    }
+
+    /* Toast Notification */
+    .toast {
+      position: fixed;
+      bottom: 2rem;
+      background: var(--text-color);
+      color: var(--bg-color);
+      padding: 0.8rem 1.6rem;
+      border-radius: 4px;
+      font-size: 1.1rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      transform: translateY(150%);
+      transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      z-index: 1000;
+    }
+
+    .toast.show {
+      transform: translateY(0);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Floating multi-size background mandala watermarks -->
+  <div class="mandala-bg-container">
+    <div class="mandala mandala-center"></div>
+    <div class="mandala mandala-tl"></div>
+    <div class="mandala mandala-tr"></div>
+    <div class="mandala mandala-bl"></div>
+    <div class="mandala mandala-br"></div>
+  </div>
+
+  <!-- Premium Gift Intro Screen -->
+  <div class="gift-overlay" id="giftOverlay">
+    <div class="gift-box">
+      <div class="gift-seal"></div>
+      <h2 class="gift-title">you have received a custom ambigram</h2>
+      <p class="gift-subtitle" id="recipientName">specially crafted for you</p>
+      <button class="reveal-btn" onclick="revealGift()">unwrap gift</button>
+    </div>
+  </div>
+
+  <!-- The centerpiece ambigram art -->
+  <main class="art-container">
+    <div class="ambigram-wrapper" id="artWrapper">
+      <img src="images.svg" alt="Ambigram Artwork" class="ambigram-img" id="ambigramImg" onclick="toggleRotation()">
+    </div>
+  </main>
+
+  <!-- Fine text-link controls at the very bottom -->
+  <footer class="art-controls" id="artControls">
+    <button class="control-link" onclick="openTimelapse()">play timelapse</button>
+    <button class="control-link" onclick="openDownload()">download assets</button>
+  </footer>
+
+  <!-- Timelapse Video Overlay -->
+  <div class="timelapse-overlay" id="timelapseOverlay">
+    <button class="close-overlay-btn" onclick="closeTimelapse()">close</button>
+    <video class="video-player" id="timelapseVideo" loop playsinline controls>
+      <source src="timelapse.mp4" type="video/mp4">
+    </video>
+  </div>
+
+  <!-- Download password prompt -->
+  <div class="password-overlay" id="passwordOverlay">
+    <div class="password-form">
+      <label for="pwdInput">enter password</label>
+      <input type="password" id="pwdInput" class="password-input" placeholder="••••••••" onkeydown="handleKeydown(event)">
+      <div class="error-msg" id="errorMsg">incorrect password</div>
+      
+      <div class="password-actions">
+        <button class="control-link" onclick="closeDownload()">cancel</button>
+        <button class="control-link" style="opacity: 0.8;" onclick="verifyPassword()">download</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Small Toast Message -->
+  <div class="toast" id="toast">
+    <span id="toastText">downloading...</span>
+  </div>
+
+  <script>
+    const ambigramImg = document.getElementById('ambigramImg');
+    const timelapseOverlay = document.getElementById('timelapseOverlay');
+    const timelapseVideo = document.getElementById('timelapseVideo');
+    const passwordOverlay = document.getElementById('passwordOverlay');
+    const pwdInput = document.getElementById('pwdInput');
+    const errorMsg = document.getElementById('errorMsg');
+    const toast = document.getElementById('toast');
+    const toastText = document.getElementById('toastText');
+
+    // Parse recipient name from URL parameters (e.g. ?recipient=Sarah)
+    const urlParams = new URLSearchParams(window.location.search);
+    const recipient = urlParams.get('recipient');
+    if (recipient) {
+      document.getElementById('recipientName').innerText = `specially crafted for ${recipient.toLowerCase()}`;
+    }
+
+    // Trigger reveal transition
+    function revealGift() {
+      const giftOverlay = document.getElementById('giftOverlay');
+      const artWrapper = document.getElementById('artWrapper');
+      const artControls = document.getElementById('artControls');
+      
+      giftOverlay.classList.add('hidden');
+      
+      setTimeout(() => {
+        artWrapper.classList.add('revealed');
+        artControls.classList.add('revealed');
+      }, 400);
+    }
+
+    // Seamless slow 180 degree rotation toggle
+    let isRotated = false;
+    function toggleRotation() {
+      isRotated = !isRotated;
+      if (isRotated) {
+        ambigramImg.classList.add('rotated');
+      } else {
+        ambigramImg.classList.remove('rotated');
+      }
+    }
+
+    // Timelapse video player triggers
+    function openTimelapse() {
+      timelapseOverlay.style.display = 'flex';
+      setTimeout(() => {
+        timelapseOverlay.classList.add('show');
+        timelapseVideo.play();
+      }, 50);
+    }
+
+    function closeTimelapse() {
+      timelapseOverlay.classList.remove('show');
+      timelapseVideo.pause();
+      setTimeout(() => {
+        timelapseOverlay.style.display = 'none';
+      }, 500);
+    }
+
+    // Password overlay controls
+    function openDownload() {
+      pwdInput.value = '';
+      errorMsg.style.display = 'none';
+      passwordOverlay.style.display = 'flex';
+      setTimeout(() => {
+        passwordOverlay.classList.add('show');
+        pwdInput.focus();
+      }, 50);
+    }
+
+    function closeDownload() {
+      passwordOverlay.classList.remove('show');
+      setTimeout(() => {
+        passwordOverlay.style.display = 'none';
+      }, 500);
+    }
+
+    function handleKeydown(e) {
+      if (e.key === 'Enter') {
+        verifyPassword();
+      }
+    }
+
+    // Verification check (Mock pass is "secret123")
+    function verifyPassword() {
+      if (pwdInput.value === 'secret123') {
+        errorMsg.style.display = 'none';
+        closeDownload();
+        showToast("downloading archive...");
+      } else {
+        errorMsg.style.display = 'block';
+        pwdInput.focus();
+      }
+    }
+
+    function showToast(message) {
+      toastText.innerText = message;
+      toast.classList.add('show');
+      setTimeout(() => {
+        toast.classList.remove('show');
+      }, 3000);
+    }
+  </script>
+</body>
+</html>
