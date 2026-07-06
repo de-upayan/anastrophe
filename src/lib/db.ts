@@ -87,8 +87,13 @@ export async function incrementViews(id: string, viewerId?: string): Promise<voi
       viewerId: viewerId || 'anonymous'
     });
     
-    // Keep counter in sync for backward compatibility
-    item.views = item.viewsLog.length;
+    // Increment total views count
+    item.views = (item.views || 0) + 1;
+    
+    // Prune views log entries older than 8 days to prevent DB bloat
+    const limitTime = Date.now() - 8 * 24 * 60 * 60 * 1000;
+    item.viewsLog = item.viewsLog.filter(x => new Date(x.timestamp).getTime() >= limitTime);
+    
     await saveAllAmbigrams(items);
   }
 }
@@ -107,8 +112,13 @@ export async function incrementDownloads(id: string, viewerId?: string): Promise
       viewerId: viewerId || 'anonymous'
     });
     
-    // Keep counter in sync for backward compatibility
-    item.downloads = item.downloadsLog.length;
+    // Increment total downloads count
+    item.downloads = (item.downloads || 0) + 1;
+    
+    // Prune downloads log entries older than 8 days to prevent DB bloat
+    const limitTime = Date.now() - 8 * 24 * 60 * 60 * 1000;
+    item.downloadsLog = item.downloadsLog.filter(x => new Date(x.timestamp).getTime() >= limitTime);
+    
     await saveAllAmbigrams(items);
   }
 }

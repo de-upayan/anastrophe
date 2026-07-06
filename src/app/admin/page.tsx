@@ -5,6 +5,11 @@ import styles from './page.module.css';
 
 export default function AdminPage() {
   const [activeTab, setActiveTab] = useState<'analytics' | 'create'>('analytics');
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
   
   // Form states
   const [recipient, setRecipient] = useState('');
@@ -222,11 +227,11 @@ export default function AdminPage() {
   };
 
   // Generate calendar dates for last 7 days (ending today)
-  const last7Days = Array.from({ length: 7 }, (_, i) => {
+  const last7Days = mounted ? Array.from({ length: 7 }, (_, i) => {
     const d = new Date();
     d.setDate(d.getDate() - (6 - i));
     return d;
-  });
+  }) : [];
 
   const points = last7Days.map((day) => {
     const dayStart = new Date(day.getFullYear(), day.getMonth(), day.getDate()).getTime();
@@ -398,7 +403,7 @@ export default function AdminPage() {
               </div>
 
               <div className={styles.svgContainer}>
-                {giftsList.length === 0 ? (
+                {!mounted || giftsList.length === 0 ? (
                   <p className={styles.emptyChartMessage}>
                     Create a link to begin tracking timeline metrics.
                   </p>

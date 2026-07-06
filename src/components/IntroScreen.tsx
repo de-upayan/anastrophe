@@ -17,16 +17,8 @@ interface IntroScreenProps {
 }
 
 export default function IntroScreen({ onProceed, proceedHref, isDismissed = false }: IntroScreenProps) {
-  const [showHi, setShowHi] = useState(false);
-  const [showIm, setShowIm] = useState(false);
-  const [startDrawing, setStartDrawing] = useState(false);
-  const [isDrawn, setIsDrawn] = useState(false);
-  const [showICreate, setShowICreate] = useState(false);
-  const [isFlipped, setIsFlipped] = useState(false);
-  const [showAmbigrams, setShowAmbigrams] = useState(false);
-  const [showProceed, setShowProceed] = useState(false);
+  const [stage, setStage] = useState(0);
   const [isSkipped, setIsSkipped] = useState(false);
-
   const timersRef = useRef<NodeJS.Timeout[]>([]);
 
   // Skip mechanism triggered by clicking anywhere or pressing any key
@@ -38,20 +30,11 @@ export default function IntroScreen({ onProceed, proceedHref, isDismissed = fals
       }
       
       setIsSkipped(true);
+      setStage(5);
       
       // Stop all timers
       timersRef.current.forEach((t) => clearTimeout(t));
       timersRef.current = [];
-      
-      // Instantly reveal all states
-      setShowHi(true);
-      setShowIm(true);
-      setStartDrawing(true);
-      setIsDrawn(true);
-      setShowICreate(true);
-      setIsFlipped(true);
-      setShowAmbigrams(true);
-      setShowProceed(true);
     };
 
     window.addEventListener('click', handleInteraction);
@@ -68,16 +51,11 @@ export default function IntroScreen({ onProceed, proceedHref, isDismissed = fals
     if (isSkipped || isDismissed) return;
 
     const timers = [
-      setTimeout(() => setShowHi(true), 300),
-      setTimeout(() => setShowIm(true), 1300),
-      setTimeout(() => setStartDrawing(true), 1300),
-      setTimeout(() => setIsDrawn(true), 3300),
-      setTimeout(() => setShowICreate(true), 3600),
-      setTimeout(() => setIsFlipped(true), 4800),
-      setTimeout(() => setShowAmbigrams(true), 4800),
-      setTimeout(() => {
-        setShowProceed(true);
-      }, 5800),
+      setTimeout(() => setStage(1), 300),
+      setTimeout(() => setStage(2), 1300),
+      setTimeout(() => setStage(3), 3600),
+      setTimeout(() => setStage(4), 4800),
+      setTimeout(() => setStage(5), 5800),
     ];
 
     timersRef.current = timers;
@@ -87,54 +65,47 @@ export default function IntroScreen({ onProceed, proceedHref, isDismissed = fals
     };
   }, [isSkipped, isDismissed]);
 
+  const showHi = stage >= 1;
+  const showIm = stage >= 2;
+  const startDrawing = stage >= 2;
+  const showICreate = stage >= 3;
+  const isFlipped = stage >= 4;
+  const showAmbigrams = stage >= 4;
+  const showProceed = stage >= 5;
+
   const renderProceedButton = () => {
+    const className = `${styles.proceedLink} ${showProceed ? styles.show : ''}`;
+    
+    const content = (
+      <div className={styles.proceedCircle}>
+        <svg 
+          className={styles.arrowSvg} 
+          width="24" 
+          height="24" 
+          viewBox="0 0 24 24" 
+          fill="none" 
+          stroke="currentColor" 
+          strokeWidth="2.5" 
+          strokeLinecap="round" 
+          strokeLinejoin="round"
+        >
+          <line x1="5" y1="12" x2="19" y2="12"></line>
+          <polyline points="12 5 19 12 12 19"></polyline>
+        </svg>
+      </div>
+    );
+
     if (proceedHref) {
       return (
-        <Link 
-          href={proceedHref} 
-          className={`${styles.proceedLink} ${showProceed ? styles.show : ''}`}
-        >
-          <div className={styles.proceedCircle}>
-            <svg 
-              className={styles.arrowSvg} 
-              width="24" 
-              height="24" 
-              viewBox="0 0 24 24" 
-              fill="none" 
-              stroke="currentColor" 
-              strokeWidth="2.5" 
-              strokeLinecap="round" 
-              strokeLinejoin="round"
-            >
-              <line x1="5" y1="12" x2="19" y2="12"></line>
-              <polyline points="12 5 19 12 12 19"></polyline>
-            </svg>
-          </div>
+        <Link href={proceedHref} className={className}>
+          {content}
         </Link>
       );
     }
 
     return (
-      <button 
-        className={`${styles.proceedLink} ${showProceed ? styles.show : ''}`} 
-        onClick={onProceed}
-      >
-        <div className={styles.proceedCircle}>
-          <svg 
-            className={styles.arrowSvg} 
-            width="24" 
-            height="24" 
-            viewBox="0 0 24 24" 
-            fill="none" 
-            stroke="currentColor" 
-            strokeWidth="2.5" 
-            strokeLinecap="round" 
-            strokeLinejoin="round"
-          >
-            <line x1="5" y1="12" x2="19" y2="12"></line>
-            <polyline points="12 5 19 12 12 19"></polyline>
-          </svg>
-        </div>
+      <button className={className} onClick={onProceed}>
+        {content}
       </button>
     );
   };
@@ -154,7 +125,6 @@ export default function IntroScreen({ onProceed, proceedHref, isDismissed = fals
         <div className={styles.logoWrapper}>
           <AnimatedLogo 
             startDrawing={startDrawing}
-            isDrawn={isDrawn}
             isFlipped={isFlipped}
           />
         </div>
