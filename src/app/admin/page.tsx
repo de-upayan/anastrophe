@@ -1,9 +1,11 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import styles from './page.module.css';
 
 export default function AdminPage() {
+  const router = useRouter();
   const [activeTab, setActiveTab] = useState<'analytics' | 'create'>('analytics');
   const [mounted, setMounted] = useState(false);
 
@@ -26,6 +28,18 @@ export default function AdminPage() {
       ...prev,
       [id]: !prev[id]
     }));
+  };
+
+  const handleLogout = async () => {
+    try {
+      const res = await fetch('/api/auth/logout', { method: 'POST' });
+      if (res.ok) {
+        localStorage.removeItem('admin_token');
+        router.push('/admin/login');
+      }
+    } catch (e) {
+      console.error('Error logging out:', e);
+    }
   };
 
   // File states
@@ -357,6 +371,12 @@ export default function AdminPage() {
               onClick={() => setActiveTab('create')}
             >
               Create New Link
+            </button>
+            <button 
+              className={styles.logoutBtn}
+              onClick={handleLogout}
+            >
+              Logout
             </button>
           </div>
         </div>

@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Anastrepho.",
+  title: "Anastrophe.",
   description: "personalized calligraphic ambigram gifts",
 };
 

@@ -151,7 +151,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
 function GlobalCustomizer() {
   const { activeTheme, setTheme, isPanelOpen, setIsPanelOpen, isGiftRevealed, setIsGiftRevealed } = useTheme();
   const pathname = usePathname();
-  const isGiftPage = pathname !== '/' && pathname !== '/admin';
+  const isGiftPage = pathname !== '/' && pathname !== '/admin' && pathname !== '/admin/login';
 
   // Reset gift reveal state when leaving gift page
   useEffect(() => {
