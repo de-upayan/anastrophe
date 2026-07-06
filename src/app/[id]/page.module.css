@@ -90,6 +90,10 @@
   transform: rotateX(180deg) rotateY(180deg);
 }
 
+.stateTimelapse.cardRotated {
+  transform: rotateX(180deg) rotateY(180deg) rotateZ(180deg);
+}
+
 .cardFront,
 .cardBack {
   position: absolute;
@@ -719,6 +723,11 @@
 /* Rotates video player when card is flipped X & Y so it remains upright */
 .stateTimelapse .videoPlayer {
   transform: rotate(180deg);
+}
+
+/* If the card is also rotated 180deg, the Z rotation cancels the X/Y rotation, so the video is already upright and needs no compensation */
+.stateTimelapse.cardRotated .videoPlayer {
+  transform: rotate(0deg);
 }
 
 

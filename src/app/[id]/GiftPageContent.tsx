@@ -16,7 +16,7 @@ interface GiftPageContentProps {
   artId: string;
 }
 
-export default function GiftPageContent({ initialItem, artId }: GiftPageContentProps) {
+export default function GiftPageContent({ initialItem }: GiftPageContentProps) {
   const searchParams = useSearchParams();
   const recipientOverride = searchParams.get('recipient');
 
@@ -25,7 +25,6 @@ export default function GiftPageContent({ initialItem, artId }: GiftPageContentP
   // Gift Overlay State
   const [isGiftOpen, setIsGiftOpen] = useState(false);
   const [isRevealed, setIsRevealed] = useState(false);
-  const [recipientText, setRecipientText] = useState('Specially Crafted for You');
 
   // Ambigram interaction states
   const [isRotated, setIsRotated] = useState(false);
@@ -52,14 +51,6 @@ export default function GiftPageContent({ initialItem, artId }: GiftPageContentP
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ action: 'view' })
     }).catch(err => console.error('Error logging view:', err));
-
-    // Customize recipient text
-    const recipientName = recipientOverride || initialItem.recipient || '';
-    if (recipientName) {
-      setRecipientText(`Specially Crafted for ${recipientName}`);
-    } else {
-      setRecipientText('Specially Crafted for You');
-    }
 
     // Auto-reveal if query param matches
     const revealParam = searchParams.get('reveal');
