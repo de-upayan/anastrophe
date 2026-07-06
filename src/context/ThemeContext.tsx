@@ -118,6 +118,16 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     root.style.setProperty('--theme-mandala-filter', activeTheme.mandalaFilter);
   }, [activeTheme]);
 
+  // Toggle theme-panel-open class on document root to pause animations during backdrop-blur rendering
+  useEffect(() => {
+    const root = document.documentElement;
+    if (isPanelOpen) {
+      root.classList.add('theme-panel-open');
+    } else {
+      root.classList.remove('theme-panel-open');
+    }
+  }, [isPanelOpen]);
+
   const setTheme = (themeId: string) => {
     const match = THEMES.find((t) => t.id === themeId);
     if (match) {

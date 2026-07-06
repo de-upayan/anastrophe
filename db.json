@@ -8,7 +8,7 @@
     "timelapseSrc": "/art/symmetry_timelapse.mp4",
     "password": "secret123",
     "createdAt": "2026-07-01T10:22:14.000Z",
-    "views": 96,
+    "views": 104,
     "downloads": 3,
     "viewsLog": [
       {
@@ -393,6 +393,38 @@
       },
       {
         "timestamp": "2026-07-06T18:03:13.094Z",
+        "viewerId": "eff8e7ca506627fe"
+      },
+      {
+        "timestamp": "2026-07-06T18:10:52.072Z",
+        "viewerId": "eff8e7ca506627fe"
+      },
+      {
+        "timestamp": "2026-07-06T18:10:56.090Z",
+        "viewerId": "eff8e7ca506627fe"
+      },
+      {
+        "timestamp": "2026-07-06T18:14:46.067Z",
+        "viewerId": "eff8e7ca506627fe"
+      },
+      {
+        "timestamp": "2026-07-06T18:14:50.141Z",
+        "viewerId": "eff8e7ca506627fe"
+      },
+      {
+        "timestamp": "2026-07-06T18:18:14.175Z",
+        "viewerId": "eff8e7ca506627fe"
+      },
+      {
+        "timestamp": "2026-07-06T18:18:22.347Z",
+        "viewerId": "eff8e7ca506627fe"
+      },
+      {
+        "timestamp": "2026-07-06T18:18:22.371Z",
+        "viewerId": "eff8e7ca506627fe"
+      },
+      {
+        "timestamp": "2026-07-06T18:18:25.673Z",
         "viewerId": "eff8e7ca506627fe"
       }
     ],

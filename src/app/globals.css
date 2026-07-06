@@ -62,6 +62,12 @@ body {
   transform: translate3d(0, 0, 0);
 }
 
+/* Pause mandala animations when modal or theme panel is open to optimize GPU backdrop-filter blur performance */
+.modal-open .mandala,
+.theme-panel-open .mandala {
+  animation-play-state: paused !important;
+}
+
 /* Left side: one massive mandala centered at the left edge */
 .mandala-left {
   left: 0;

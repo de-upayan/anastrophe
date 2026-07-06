@@ -79,6 +79,19 @@ export default function GiftPageContent({ initialItem, artId }: GiftPageContentP
     }
   }, [recipientOverride, initialItem, searchParams, triggerGiftReveal]);
 
+  // Toggle modal-open class on document root to pause background animations during heavy backdrop-blurs
+  useEffect(() => {
+    const root = document.documentElement;
+    if (isPasswordOpen) {
+      root.classList.add('modal-open');
+    } else {
+      root.classList.remove('modal-open');
+    }
+    return () => {
+      root.classList.remove('modal-open');
+    };
+  }, [isPasswordOpen]);
+
   const toggleRotation = () => {
     setIsRotated(!isRotated);
   };
@@ -272,12 +285,14 @@ export default function GiftPageContent({ initialItem, artId }: GiftPageContentP
         <div className={`${styles.bottomSection} ${isRevealed ? styles.revealed : ''}`}>
           <footer className={styles.artControls}>
             <button className={`${styles.controlLink} ${styles.linkLeft}`} onClick={toggleTimelapse}>
-              {isTimelapseOpen ? 'Show Artwork' : 'Play Timelapse'}
+              <span className={styles.linkText}>
+                {isTimelapseOpen ? 'Show Artwork' : 'Play Timelapse'}
+              </span>
             </button>
             <>
               <span className={styles.controlDivider}>•</span>
               <button className={`${styles.controlLink} ${styles.linkRight}`} onClick={openDownload}>
-                Download Assets
+                <span className={styles.linkText}>Download Assets</span>
               </button>
             </>
           </footer>
@@ -311,8 +326,12 @@ export default function GiftPageContent({ initialItem, artId }: GiftPageContentP
             </div>
             
             <div className={styles.passwordActions}>
-              <button className={styles.controlLink} onClick={closeDownload}>Cancel</button>
-              <button className={styles.controlLink} style={{ opacity: 0.8 }} onClick={handleVerifyPassword}>Download</button>
+              <button className={styles.controlLink} onClick={closeDownload}>
+                <span className={styles.linkText}>Cancel</span>
+              </button>
+              <button className={styles.controlLink} onClick={handleVerifyPassword}>
+                <span className={styles.linkText}>Download</span>
+              </button>
             </div>
           </div>
         </div>
