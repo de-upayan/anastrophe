@@ -160,7 +160,8 @@ function GlobalCustomizer() {
     }
   }, [pathname, isGiftPage, setIsGiftRevealed]);
 
-  const showToggle = !isGiftPage || isGiftRevealed;
+  // Always display theme customizer toggle on all pages
+  const showToggle = true;
 
   if (!showToggle) return null;
 

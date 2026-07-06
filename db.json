@@ -8,7 +8,7 @@
     "timelapseSrc": "/art/symmetry_timelapse.mp4",
     "password": "secret123",
     "createdAt": "2026-07-01T10:22:14.000Z",
-    "views": 81,
+    "views": 96,
     "downloads": 3,
     "viewsLog": [
       {
@@ -333,6 +333,66 @@
       },
       {
         "timestamp": "2026-07-06T17:42:23.034Z",
+        "viewerId": "eff8e7ca506627fe"
+      },
+      {
+        "timestamp": "2026-07-06T18:01:41.851Z",
+        "viewerId": "eff8e7ca506627fe"
+      },
+      {
+        "timestamp": "2026-07-06T18:01:53.174Z",
+        "viewerId": "eff8e7ca506627fe"
+      },
+      {
+        "timestamp": "2026-07-06T18:01:59.394Z",
+        "viewerId": "eff8e7ca506627fe"
+      },
+      {
+        "timestamp": "2026-07-06T18:02:34.826Z",
+        "viewerId": "eff8e7ca506627fe"
+      },
+      {
+        "timestamp": "2026-07-06T18:02:42.782Z",
+        "viewerId": "eff8e7ca506627fe"
+      },
+      {
+        "timestamp": "2026-07-06T18:02:49.374Z",
+        "viewerId": "eff8e7ca506627fe"
+      },
+      {
+        "timestamp": "2026-07-06T18:02:51.045Z",
+        "viewerId": "eff8e7ca506627fe"
+      },
+      {
+        "timestamp": "2026-07-06T18:02:52.535Z",
+        "viewerId": "eff8e7ca506627fe"
+      },
+      {
+        "timestamp": "2026-07-06T18:02:55.214Z",
+        "viewerId": "eff8e7ca506627fe"
+      },
+      {
+        "timestamp": "2026-07-06T18:02:58.197Z",
+        "viewerId": "eff8e7ca506627fe"
+      },
+      {
+        "timestamp": "2026-07-06T18:03:00.717Z",
+        "viewerId": "eff8e7ca506627fe"
+      },
+      {
+        "timestamp": "2026-07-06T18:03:04.884Z",
+        "viewerId": "eff8e7ca506627fe"
+      },
+      {
+        "timestamp": "2026-07-06T18:03:05.734Z",
+        "viewerId": "eff8e7ca506627fe"
+      },
+      {
+        "timestamp": "2026-07-06T18:03:11.689Z",
+        "viewerId": "eff8e7ca506627fe"
+      },
+      {
+        "timestamp": "2026-07-06T18:03:13.094Z",
         "viewerId": "eff8e7ca506627fe"
       }
     ],
