@@ -117,7 +117,7 @@ export default function AdminPage() {
   }, []);
 
   const handleDeleteGift = async (id: string) => {
-    if (!confirm('Are you sure you want to delete this link? This only removes it from the database; you will have to manually clean up its files from the disk/drive.')) {
+    if (!confirm('Are you sure you want to delete this link? This will permanently delete the link and automatically clean up all associated asset files.')) {
       return;
     }
     try {
