@@ -489,50 +489,61 @@ export default function AdminPage() {
                     <path d={downloadsLinePath} fill="none" stroke="#ff4b72" strokeWidth="2" strokeLinecap="round" />
 
                     {/* Interactive hover guides and tooltip overlay */}
-                    {hoveredIndex !== null && (
-                      <g>
-                        <line 
-                          x1={getX(hoveredIndex)} 
-                          y1="30" 
-                          x2={getX(hoveredIndex)} 
-                          y2="160" 
-                          stroke="rgba(255, 255, 255, 0.15)" 
-                          strokeDasharray="2,2" 
-                        />
-                        <rect 
-                          x={getX(hoveredIndex) - 60} 
-                          y={Math.min(getY(points[hoveredIndex].views), getY(points[hoveredIndex].downloads)) - 48} 
-                          width="120" 
-                          height="40" 
-                          rx="4" 
-                          fill="rgba(24, 29, 32, 0.95)" 
-                          stroke="rgba(255, 255, 255, 0.15)" 
-                          strokeWidth="1"
-                        />
-                        <text 
-                          x={getX(hoveredIndex)} 
-                          y={Math.min(getY(points[hoveredIndex].views), getY(points[hoveredIndex].downloads)) - 34} 
-                          fill="rgba(255, 255, 255, 0.75)" 
-                          fontSize="9" 
-                          fontFamily="var(--font-family)"
-                          fontWeight="normal"
-                          textAnchor="middle"
-                        >
-                          Views: <tspan fill="#00f2fe" fontWeight="bold">{points[hoveredIndex].views}</tspan>
-                        </text>
-                        <text 
-                          x={getX(hoveredIndex)} 
-                          y={Math.min(getY(points[hoveredIndex].views), getY(points[hoveredIndex].downloads)) - 22} 
-                          fill="rgba(255, 255, 255, 0.75)" 
-                          fontSize="9" 
-                          fontFamily="var(--font-family)"
-                          fontWeight="normal"
-                          textAnchor="middle"
-                        >
-                          Downloads: <tspan fill="#ff4b72" fontWeight="bold">{points[hoveredIndex].downloads}</tspan>
-                        </text>
-                      </g>
-                    )}
+                    {hoveredIndex !== null && (() => {
+                      const x = getX(hoveredIndex);
+                      const targetY = Math.min(getY(points[hoveredIndex].views), getY(points[hoveredIndex].downloads));
+                      
+                      // If targetY is near top bounds (y < 75), render tooltip below the point
+                      const showBelow = targetY < 75;
+                      const rectY = showBelow ? (targetY + 12) : (targetY - 48);
+                      const viewsTextY = rectY + 15;
+                      const downloadsTextY = rectY + 27;
+
+                      return (
+                        <g>
+                          <line 
+                            x1={x} 
+                            y1="30" 
+                            x2={x} 
+                            y2="160" 
+                            stroke="rgba(255, 255, 255, 0.15)" 
+                            strokeDasharray="2,2" 
+                          />
+                          <rect 
+                            x={x - 60} 
+                            y={rectY} 
+                            width="120" 
+                            height="40" 
+                            rx="4" 
+                            fill="rgba(24, 29, 32, 0.95)" 
+                            stroke="rgba(255, 255, 255, 0.15)" 
+                            strokeWidth="1"
+                          />
+                          <text 
+                            x={x} 
+                            y={viewsTextY} 
+                            fill="rgba(255, 255, 255, 0.75)" 
+                            fontSize="9" 
+                            fontFamily="var(--font-family)"
+                            fontWeight="normal"
+                            textAnchor="middle"
+                          >
+                            Views: <tspan fill="#00f2fe" fontWeight="bold">{points[hoveredIndex].views}</tspan>
+                          </text>
+                          <text 
+                            x={x} 
+                            y={downloadsTextY} 
+                            fill="rgba(255, 255, 255, 0.75)" 
+                            fontSize="9" 
+                            fontFamily="var(--font-family)"
+                            fontWeight="normal"
+                            textAnchor="middle"
+                          >
+                            Downloads: <tspan fill="#ff4b72" fontWeight="bold">{points[hoveredIndex].downloads}</tspan>
+                          </text>
+                        </g>
+                      );
+                    })()}
 
                     {/* Data nodes */}
                     {points.map((p, idx) => (

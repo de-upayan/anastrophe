@@ -1,7 +1,6 @@
 import { NextResponse } from 'next/server';
-import fs from 'fs/promises';
-import path from 'path';
 import { saveAmbigram } from '@/lib/db';
+import { uploadFileToStorage, getStoragePublicUrl } from '@/lib/storage';
 
 export async function POST(request: Request) {
   try {
@@ -35,42 +34,50 @@ export async function POST(request: Request) {
     };
     const id = clientId || generateRandomId(8);
 
-    // Setup local filesystem uploads directory (simulates cloud storage in dev mock)
-    const uploadsDir = path.join(process.cwd(), 'public', 'uploads');
-    await fs.mkdir(uploadsDir, { recursive: true });
-
-    // Save preview image (.png)
-    const previewBytes = await previewFile.arrayBuffer();
+    // 1. Upload preview image (.png) to Supabase Storage (publicPreviews bucket)
+    const previewBuffer = Buffer.from(await previewFile.arrayBuffer());
     const previewFileName = `${id}.png`;
-    const previewPath = path.join(uploadsDir, previewFileName);
-    await fs.writeFile(previewPath, Buffer.from(previewBytes));
-    const imageSrc = `/uploads/${previewFileName}`;
+    await uploadFileToStorage(
+      previewBuffer,
+      previewFileName,
+      'image/png',
+      'previews' // public bucket
+    );
+    const imageSrc = getStoragePublicUrl(previewFileName, 'previews');
 
-    // Save vector file (.svg)
-    const vectorBytes = await vectorFile.arrayBuffer();
+    // 2. Upload vector artwork (.svg) to Supabase Storage (privateVectors bucket)
+    const vectorBuffer = Buffer.from(await vectorFile.arrayBuffer());
     const vectorFileName = `${id}.svg`;
-    const vectorPath = path.join(uploadsDir, vectorFileName);
-    await fs.writeFile(vectorPath, Buffer.from(vectorBytes));
-    const vectorSrc = `/uploads/${vectorFileName}`;
+    await uploadFileToStorage(
+      vectorBuffer,
+      vectorFileName,
+      'image/svg+xml',
+      'vectors' // private bucket
+    );
+    const vectorSrc = vectorFileName; // Store file name path to download securely later
 
-    // Save timelapse file (.mp4) if provided
+    // 3. Upload timelapse video (.mp4) if provided
     let timelapseSrc = undefined;
     if (timelapseFile) {
-      const timelapseBytes = await timelapseFile.arrayBuffer();
+      const timelapseBuffer = Buffer.from(await timelapseFile.arrayBuffer());
       const timelapseFileName = `${id}.mp4`;
-      const timelapsePath = path.join(uploadsDir, timelapseFileName);
-      await fs.writeFile(timelapsePath, Buffer.from(timelapseBytes));
-      timelapseSrc = `/uploads/${timelapseFileName}`;
+      await uploadFileToStorage(
+        timelapseBuffer,
+        timelapseFileName,
+        'video/mp4',
+        'previews' // public bucket
+      );
+      timelapseSrc = getStoragePublicUrl(timelapseFileName, 'previews');
     }
 
-    // Save metadata record into database
+    // 4. Save metadata record into database
     const newItem = {
       id,
       title,
       recipient,
-      imageSrc,     // Path to preview PNG
-      vectorSrc,    // Path to secure SVG (mocked)
-      timelapseSrc, // Path to timelapse MP4 (mocked)
+      imageSrc,
+      vectorSrc,    // private filename (for gated download)
+      timelapseSrc, // public video URL
       password
     };
 
@@ -95,4 +102,3 @@ export async function POST(request: Request) {
     );
   }
 }
-

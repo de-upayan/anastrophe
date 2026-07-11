@@ -1,7 +1,6 @@
 import { NextResponse } from 'next/server';
-import fs from 'fs/promises';
-import path from 'path';
 import { getAmbigramById } from '@/lib/db';
+import { downloadTextFileFromStorage } from '@/lib/storage';
 
 export async function POST(
   request: Request,
@@ -19,7 +18,7 @@ export async function POST(
       );
     }
 
-    const expectedPassword = ambigram.password || 'secret123';
+    const expectedPassword = ambigram.password;
     if (password !== expectedPassword) {
       return NextResponse.json(
         { success: false, error: 'Incorrect password' },
@@ -27,19 +26,16 @@ export async function POST(
       );
     }
 
-    // In dev mock, the SVG is stored locally in vectorSrc
     if (!ambigram.vectorSrc) {
       return NextResponse.json(
-        { success: false, error: 'Vector file not found' },
+        { success: false, error: 'Vector file name not found in storage record' },
         { status: 404 }
       );
     }
 
-    const relativePath = ambigram.vectorSrc.startsWith('/') ? ambigram.vectorSrc : `/${ambigram.vectorSrc}`;
-    const svgPath = path.join(process.cwd(), 'public', relativePath);
-
     try {
-      const svgContent = await fs.readFile(svgPath, 'utf-8');
+      // Download raw text content of the vector file from the private 'vectors' bucket
+      const svgContent = await downloadTextFileFromStorage(ambigram.vectorSrc, 'vectors');
       
       return new Response(svgContent, {
         headers: {
@@ -48,9 +44,9 @@ export async function POST(
         }
       });
     } catch (fileErr) {
-      console.error('Error reading vector file:', fileErr);
+      console.error('Error fetching vector from Supabase Storage:', fileErr);
       return NextResponse.json(
-        { success: false, error: 'Failed to retrieve vector file from storage' },
+        { success: false, error: 'Failed to retrieve vector file from Supabase Storage' },
         { status: 500 }
       );
     }

@@ -1,8 +1,7 @@
 import { NextResponse } from 'next/server';
 import { getAmbigramById, deleteAmbigram, incrementViews, incrementDownloads } from '@/lib/db';
 import crypto from 'crypto';
-import fs from 'fs/promises';
-import path from 'path';
+import { deleteFileFromStorage } from '@/lib/storage';
 
 export async function GET(
   request: Request,
@@ -21,7 +20,7 @@ export async function GET(
 
     return NextResponse.json({ success: true, ambigram });
   } catch (error) {
-    console.error('Error fetching dynamic ambigram:', error);
+    console.error('Error fetching ambigram details:', error);
     const errorMsg = error instanceof Error ? error.message : 'Internal Server Error';
     return NextResponse.json(
       { success: false, error: errorMsg },
@@ -38,17 +37,14 @@ export async function PATCH(
     const { id } = await params;
     const { action } = await request.json();
 
-    // Extract client IP and hash it for anonymous unique viewer identification
-    const forwardedFor = request.headers.get('x-forwarded-for');
-    const ip = forwardedFor ? forwardedFor.split(',')[0].trim() : '127.0.0.1';
-    const viewerId = crypto.createHash('sha256').update(ip).digest('hex').substring(0, 16);
+    const viewerId = request.headers.get('x-viewer-id') || undefined;
 
     if (action === 'view') {
       await incrementViews(id, viewerId);
-      return NextResponse.json({ success: true, message: 'View registered' });
+      return NextResponse.json({ success: true, message: 'View tracked' });
     } else if (action === 'download') {
       await incrementDownloads(id, viewerId);
-      return NextResponse.json({ success: true, message: 'Download registered' });
+      return NextResponse.json({ success: true, message: 'Download tracked' });
     } else {
       return NextResponse.json(
         { success: false, error: 'Invalid action' },
@@ -76,24 +72,19 @@ export async function DELETE(
     const ambigram = await getAmbigramById(id);
     
     if (ambigram) {
-      const deleteLocalFile = async (srcPath: string | undefined) => {
-        if (srcPath && srcPath.startsWith('/uploads/')) {
-          try {
-            const fullPath = path.join(process.cwd(), 'public', srcPath);
-            await fs.unlink(fullPath);
-          } catch (err) {
-            console.warn(`Could not delete file ${srcPath} from disk:`, err);
-          }
-        }
-      };
-
-      // 2. Clean up associated files from the local directory
-      await deleteLocalFile(ambigram.imageSrc);
-      await deleteLocalFile(ambigram.vectorSrc);
-      await deleteLocalFile(ambigram.timelapseSrc);
+      // 2. Clean up associated files from Supabase Storage buckets
+      await deleteFileFromStorage(`${id}.png`, 'previews');
+      
+      if (ambigram.vectorSrc) {
+        await deleteFileFromStorage(ambigram.vectorSrc, 'vectors');
+      }
+      
+      if (ambigram.timelapseSrc) {
+        await deleteFileFromStorage(`${id}.mp4`, 'previews');
+      }
     }
     
-    // 3. Perform deletion from JSON database
+    // 3. Perform deletion from Supabase database
     await deleteAmbigram(id);
 
     return NextResponse.json({ success: true, message: 'Ambigram and its files deleted' });
