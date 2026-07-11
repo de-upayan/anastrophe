@@ -148,9 +148,16 @@ export default function GiftPageContent({ initialItem }: GiftPageContentProps) {
 
       closeDownload();
 
-      // 2. Fetch the already-cached PNG preview image
-      const pngResponse = await fetch(initialItem.imageSrc);
-      const pngBlob = await pngResponse.blob();
+      // 2. Fetch the timelapse MP4 video if available (usually cached in browser)
+      let videoBlob = null;
+      if (initialItem.timelapseSrc) {
+        try {
+          const videoResponse = await fetch(initialItem.timelapseSrc);
+          videoBlob = await videoResponse.blob();
+        } catch (vidErr) {
+          console.warn('Could not fetch timelapse video for zip bundling:', vidErr);
+        }
+      }
 
       // 3. Dynamically load JSZip from CDN
       const JSZip = await new Promise<any>((resolve, reject) => {
@@ -165,11 +172,13 @@ export default function GiftPageContent({ initialItem }: GiftPageContentProps) {
         document.head.appendChild(script);
       });
 
-      // 4. Bundle SVG and PNG into ZIP in memory
+      // 4. Bundle SVG and Video into ZIP in memory
       const zip = new JSZip();
       const baseName = initialItem.title || 'ambigram';
       zip.file(`${baseName}.svg`, svgContent);
-      zip.file(`${baseName}.png`, pngBlob);
+      if (videoBlob) {
+        zip.file(`${baseName}_timelapse.mp4`, videoBlob);
+      }
 
       const zipBlob = await zip.generateAsync({ type: 'blob' });
       const downloadUrl = URL.createObjectURL(zipBlob);
