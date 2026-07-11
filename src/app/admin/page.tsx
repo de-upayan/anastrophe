@@ -154,10 +154,21 @@ export default function AdminPage() {
     setShowResult(false);
 
     const linkTitle = recipient ? `Link for ${recipient}` : 'Ambigram Link';
-    const id = linkTitle.toLowerCase().trim().replace(/\s+/g, '-').replace(/[^a-z0-9\-]/g, '');
+    
+    // Generate random 8-character ID for security and privacy
+    const generateRandomId = (length: number = 8): string => {
+      const chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+      let result = '';
+      for (let i = 0; i < length; i++) {
+        result += chars.charAt(Math.floor(Math.random() * chars.length));
+      }
+      return result;
+    };
+    const id = generateRandomId(8);
 
     // Prepare files
     const formData = new FormData();
+    formData.append('id', id);
     formData.append('title', linkTitle);
     if (recipient) formData.append('recipient', recipient);
     if (description) formData.append('description', description);

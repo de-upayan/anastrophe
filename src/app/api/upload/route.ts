@@ -23,7 +23,18 @@ export async function POST(request: Request) {
       );
     }
 
-    const id = title.toLowerCase().trim().replace(/\s+/g, '-').replace(/[^a-z0-9\-]/g, '');
+    const clientId = formData.get('id') as string || undefined;
+    
+    // Generate random 8-character ID if not provided by client
+    const generateRandomId = (length: number = 8): string => {
+      const chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+      let result = '';
+      for (let i = 0; i < length; i++) {
+        result += chars.charAt(Math.floor(Math.random() * chars.length));
+      }
+      return result;
+    };
+    const id = clientId || generateRandomId(8);
 
     // Setup local filesystem uploads directory (simulates cloud storage in dev mock)
     const uploadsDir = path.join(process.cwd(), 'public', 'uploads');
