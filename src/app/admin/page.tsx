@@ -93,13 +93,6 @@ export default function AdminPage() {
     }
   };
 
-  const handleZipChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      setZipFile(file);
-    }
-  };
-
   const fetchGifts = async () => {
     try {
       const res = await fetch('/api/ambigrams');
