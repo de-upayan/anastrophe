@@ -17,7 +17,6 @@ export default function AdminPage() {
   // Form states
   const [recipient, setRecipient] = useState('');
   const [password, setPassword] = useState('');
-  const [description, setDescription] = useState('');
   const [giftsList, setGiftsList] = useState<AmbigramItem[]>([]);
   const [selectedGiftFilter, setSelectedGiftFilter] = useState('all');
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
@@ -171,7 +170,6 @@ export default function AdminPage() {
     formData.append('id', id);
     formData.append('title', linkTitle);
     if (recipient) formData.append('recipient', recipient);
-    if (description) formData.append('description', description);
     if (password) formData.append('password', password);
     formData.append('vectorFile', vectorFile); // sends raw SVG file
     formData.append('previewFile', previewFile, `${id}.png`); // sends PNG preview blob
@@ -207,7 +205,6 @@ export default function AdminPage() {
           // Clear form inputs
           setRecipient('');
           setPassword('');
-          setDescription('');
           setVectorFile(null);
           setPreviewFile(null);
           setTimelapseFile(null);
@@ -753,16 +750,6 @@ export default function AdminPage() {
                   </div>
                 </div>
 
-                <div className={styles.formGroup}>
-                  <label htmlFor="description">Description</label>
-                  <textarea 
-                    id="description" 
-                    rows={2} 
-                    placeholder="Artistic context..." 
-                    value={description}
-                    onChange={(e) => setDescription(e.target.value)}
-                  />
-                </div>
 
                 {/* Raw Vector SVG input dropzone */}
                 <div className={styles.formGroup}>

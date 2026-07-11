@@ -7,7 +7,6 @@ export interface AmbigramItem {
   id: string;
   title: string;
   recipient?: string;
-  description?: string;
   imageSrc: string;
   timelapseSrc?: string;
   zipSrc?: string;

@@ -9,7 +9,6 @@ export async function POST(request: Request) {
     
     const title = formData.get('title') as string;
     const recipient = formData.get('recipient') as string || undefined;
-    const description = formData.get('description') as string || undefined;
     const password = formData.get('password') as string || undefined;
     
     const vectorFile = formData.get('vectorFile') as File | null;
@@ -69,7 +68,6 @@ export async function POST(request: Request) {
       id,
       title,
       recipient,
-      description,
       imageSrc,     // Path to preview PNG
       vectorSrc,    // Path to secure SVG (mocked)
       timelapseSrc, // Path to timelapse MP4 (mocked)
