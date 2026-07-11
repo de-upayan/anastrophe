@@ -340,17 +340,16 @@ export default function GiftPageContent({ initialItem }: GiftPageContentProps) {
 
         <div className={`${styles.bottomSection} ${isRevealed ? styles.revealed : ''}`}>
           <footer className={styles.artControls}>
-            <button className={`${styles.controlLink} ${styles.linkLeft}`} onClick={toggleTimelapse}>
-              <span className={styles.linkText}>
-                {isTimelapseOpen ? 'Show Artwork' : 'Play Timelapse'}
-              </span>
-            </button>
-            <>
-              <span className={styles.controlDivider}>•</span>
-              <button className={`${styles.controlLink} ${styles.linkRight}`} onClick={openDownload}>
-                <span className={styles.linkText}>Download Assets</span>
+            {initialItem?.timelapseSrc && (
+              <button className={`${styles.controlLink} ${styles.linkLeft}`} onClick={toggleTimelapse}>
+                <span className={styles.linkText}>
+                  {isTimelapseOpen ? 'Show Artwork' : 'Play Timelapse'}
+                </span>
               </button>
-            </>
+            )}
+            <button className={`${styles.controlLink} ${initialItem?.timelapseSrc ? styles.linkRight : ''}`} onClick={openDownload}>
+              <span className={styles.linkText}>Download Assets</span>
+            </button>
           </footer>
         </div>
 
