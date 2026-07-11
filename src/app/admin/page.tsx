@@ -698,7 +698,7 @@ export default function AdminPage() {
                 {/* General details */}
 
                 <div className={styles.formGroup}>
-                  <label htmlFor="recipient">Recipient (optional)</label>
+                  <label htmlFor="recipient">Recipient</label>
                   <input 
                     type="text" 
                     id="recipient" 
@@ -757,7 +757,7 @@ export default function AdminPage() {
 
                 {/* Raw Vector SVG input dropzone */}
                 <div className={styles.formGroup}>
-                  <label>Raw Vector Artwork (.svg)</label>
+                  <label>Raw Vector Artwork (.svg) <span style={{ color: '#ff6b6b' }}>*</span></label>
                   <input 
                     type="file" 
                     accept=".svg" 
