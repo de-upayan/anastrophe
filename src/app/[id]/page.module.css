@@ -41,12 +41,14 @@
   align-items: center;
   justify-content: center;
   opacity: 0;
+  pointer-events: none; /* Prevent clicks when hidden */
   transition: opacity 1.6s ease 0.6s;
   z-index: 10;
 }
 
 .bottomSection.revealed {
   opacity: 1;
+  pointer-events: auto; /* Enable clicks when visible */
 }
 
 .flipContainer {
@@ -1009,8 +1011,14 @@
     display: flex !important;
     align-items: center;
     justify-content: center; /* Center stacked buttons in the left column */
-    opacity: 1 !important;
+    opacity: 0 !important; /* Hide by default in landscape */
+    pointer-events: none !important;
     align-self: center; /* Vertically center within row */
+  }
+
+  .bottomSection.revealed {
+    opacity: 1 !important;
+    pointer-events: auto !important;
   }
 
   .artControls {
