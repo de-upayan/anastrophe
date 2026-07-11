@@ -149,8 +149,17 @@
   opacity: 1;
 }
 
-/* Media Query tweaks */
-@media (max-width: 768px) {
+/* Mobile Portrait Mode */
+@media (max-width: 768px) and (orientation: portrait) {
+  .introOverlay.dismissed {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+
+  .contentWrapper {
+    gap: 0.5rem; /* Tighter layout for mobile screens */
+  }
+
   .introText {
     flex-direction: row;
     gap: 0.6rem;
@@ -158,31 +167,95 @@
   
   .subText {
     flex-direction: column;
-    gap: 0.4rem;
+    gap: 0.2rem;
   }
   
   .scriptText {
-    font-size: 1.8rem;
+    font-size: 1.3rem;
   }
   
   .hiGreeting {
-    font-size: 2.4rem;
+    font-size: 1.8rem;
+  }
+
+  .logoWrapper {
+    margin: 0.4rem 0 0.8rem; /* Dramatically reduced gaps above and below the logo */
+    max-width: 95vw; /* Make the ambigram logo wider & more prominent on mobile */
   }
   
   .ambigramsText {
-    font-size: 2.1rem;
+    font-size: 1.5rem;
   }
   
   .proceedLink {
-    right: 2rem;
+    right: auto;
     top: auto;
     bottom: 3.5rem;
-    transform: translateX(-50%) translateY(25px);
     left: 50%;
-    right: auto;
+    transform: translateX(-50%) translateY(25px);
   }
   
   .proceedLink.show {
     transform: translateX(-50%) translateY(0);
+  }
+
+  .arrowSvg {
+    transform: rotate(90deg);
+  }
+}
+
+/* Mobile Landscape Mode (Short viewports) */
+@media (max-width: 950px) and (orientation: landscape), (max-height: 500px) and (orientation: landscape) {
+  .introOverlay.dismissed {
+    transform: translateX(-100%);
+    opacity: 0;
+  }
+
+  .contentWrapper {
+    gap: 0.25rem; /* Compact gap for vertical conservation */
+  }
+
+  .introText {
+    flex-direction: row;
+    gap: 0.6rem;
+  }
+  
+  .subText {
+    flex-direction: row; /* Horizontal layout saves screen height */
+    gap: 0.6rem;
+    align-items: baseline;
+  }
+  
+  .scriptText {
+    font-size: 1.15rem;
+  }
+  
+  .hiGreeting {
+    font-size: 1.4rem;
+  }
+
+  .logoWrapper {
+    margin: 0.15rem 0 0.3rem;
+    max-width: 60vw; /* Scale down width so height fits short screens nicely */
+  }
+  
+  .ambigramsText {
+    font-size: 1.25rem;
+  }
+  
+  .proceedLink {
+    right: 2.5rem;
+    top: 50%;
+    bottom: auto;
+    left: auto;
+    transform: translateY(-50%) translateX(25px);
+  }
+  
+  .proceedLink.show {
+    transform: translateY(-50%) translateX(0);
+  }
+
+  .arrowSvg {
+    transform: rotate(0deg); /* Point rightward to align with horizontal layout */
   }
 }

@@ -234,7 +234,10 @@ export default function GiftPageContent({ initialItem }: GiftPageContentProps) {
                       <div className={styles.mysteryMandala}></div>
                       <div className={styles.mysteryLogo}>?</div>
                     </div>
-                    <div className={styles.revealHint}>Click to reveal</div>
+                    <div className={styles.revealHint}>
+                      <span className={styles.desktopOnly}>Click to reveal</span>
+                      <span className={styles.mobileOnly}>Tap to reveal</span>
+                    </div>
                   </div>
                 ) : (
                   <video 
@@ -252,13 +255,19 @@ export default function GiftPageContent({ initialItem }: GiftPageContentProps) {
               <div className={styles.cardBack} onClick={toggleRotation} title="Click to rotate 180°">
                 {isRevealed && (
                   <>
-                    <div className={styles.rotateHintTop}>Click design to rotate 180°</div>
+                    <div className={styles.rotateHintTop}>
+                      <span className={styles.desktopOnly}>Click design to rotate 180°</span>
+                      <span className={styles.mobileOnly}>Tap design to rotate 180°</span>
+                    </div>
                     <img 
                       src={initialItem.imageSrc} 
                       alt="Ambigram Artwork" 
                       className={styles.ambigramImg}
                     />
-                    <div className={styles.rotateHintBottom}>Click design to rotate 180°</div>
+                    <div className={styles.rotateHintBottom}>
+                      <span className={styles.desktopOnly}>Click design to rotate 180°</span>
+                      <span className={styles.mobileOnly}>Tap design to rotate 180°</span>
+                    </div>
                   </>
                 )}
               </div>

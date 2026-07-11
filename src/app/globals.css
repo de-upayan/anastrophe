@@ -206,6 +206,27 @@ body {
   display: flex;
   flex-direction: column;
   gap: 0.8rem;
+  overflow-y: auto; /* Enable vertical scrolling */
+  flex: 1; /* Grow to fill the vertical space of drawer */
+  padding-right: 0.4rem; /* Spacing for scrollbar */
+}
+
+/* Custom scrollbar for theme list */
+.global-theme-list::-webkit-scrollbar {
+  width: 4px;
+}
+
+.global-theme-list::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.global-theme-list::-webkit-scrollbar-thumb {
+  background: rgba(var(--theme-bg-rgb), 0.15);
+  border-radius: 10px;
+}
+
+.global-theme-list::-webkit-scrollbar-thumb:hover {
+  background: rgba(var(--theme-bg-rgb), 0.35);
 }
 
 .global-theme-option {
@@ -247,4 +268,34 @@ body {
   font-weight: 300;
   letter-spacing: 0.08em;
   opacity: 0.8;
+}
+
+/* Global mobile adjustments for mandalas and theme panel */
+@media (max-width: 768px) {
+  .mandala-left {
+    width: 80vw;
+    height: 80vw;
+  }
+  
+  .mandala-rt {
+    width: 50vh;
+    height: 50vh;
+  }
+  
+  .mandala-rb {
+    width: 60vh;
+    height: 60vh;
+  }
+
+  .global-customize-toggle {
+    top: 1rem;
+    right: 1rem;
+    width: 38px;
+    height: 38px;
+  }
+
+  .global-customizer-panel {
+    width: 280px;
+    padding: 2rem 1.5rem;
+  }
 }
