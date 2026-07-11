@@ -432,6 +432,16 @@
   align-items: center;
 }
 
+.passwordInputWrapper.shake {
+  animation: shake 0.4s ease-in-out;
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  15%, 45%, 75% { transform: translateX(-8px); }
+  30%, 60% { transform: translateX(8px); }
+}
+
 .passwordInput {
   background: none;
   border: none;
@@ -442,12 +452,17 @@
   font-family: var(--font-family);
   font-size: 1.5rem;
   text-align: center;
-  transition: border-color 0.4s ease;
+  transition: border-color 0.4s ease, color 0.4s ease;
 }
 
 .passwordInput:focus {
   outline: none;
   border-color: var(--theme-accent); /* Glowing active theme accent on focus */
+}
+
+.passwordInput.inputError {
+  color: #ff6b6b !important;
+  border-color: #ff6b6b !important;
 }
 
 .passwordToggleBtn {

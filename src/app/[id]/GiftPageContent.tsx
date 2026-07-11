@@ -31,6 +31,7 @@ export default function GiftPageContent({ initialItem }: GiftPageContentProps) {
   const [password, setPassword] = useState('');
   const [isPasswordError, setIsPasswordError] = useState(false);
   const [showPasswordText, setShowPasswordText] = useState(false);
+  const [isShaking, setIsShaking] = useState(false);
   
   // Toast notifications
   const [toastMessage, setToastMessage] = useState('');
@@ -115,13 +116,13 @@ export default function GiftPageContent({ initialItem }: GiftPageContentProps) {
       setPassword('');
       setIsPasswordError(false);
       setShowPasswordText(false); // Reset visibility to hidden
+      setIsShaking(false); // Reset shaking state
     }, 500);
   };
 
   const handleVerifyPassword = async () => {
     if (!initialItem) return;
     setIsPasswordError(false);
-    showToast('Verifying and packaging assets...');
 
     try {
       // 1. Fetch the secure private SVG from download API
@@ -133,10 +134,12 @@ export default function GiftPageContent({ initialItem }: GiftPageContentProps) {
 
       if (!response.ok) {
         setIsPasswordError(true);
-        showToast('Incorrect password. Access denied.');
+        setIsShaking(true);
+        setTimeout(() => setIsShaking(false), 800); // Shake (400ms) + fade-out red tint
         return;
       }
 
+      showToast('Packaging assets...');
       const svgContent = await response.text();
 
       // Track download analytics
@@ -362,11 +365,11 @@ export default function GiftPageContent({ initialItem }: GiftPageContentProps) {
 
           <div className={styles.passwordForm}>
             <label htmlFor="pwdInput">Enter Password</label>
-            <div className={styles.passwordInputWrapper}>
+            <div className={`${styles.passwordInputWrapper} ${isShaking ? styles.shake : ''}`}>
               <input 
                 type={showPasswordText ? "text" : "password"} 
                 id="pwdInput" 
-                className={styles.passwordInput} 
+                className={`${styles.passwordInput} ${isShaking ? styles.inputError : ''}`} 
                 placeholder="••••••••" 
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
@@ -393,9 +396,6 @@ export default function GiftPageContent({ initialItem }: GiftPageContentProps) {
                   </svg>
                 )}
               </button>
-            </div>
-            <div className={styles.errorMsg} style={{ display: isPasswordError ? 'block' : 'none' }}>
-              Incorrect password
             </div>
             
             <div className={styles.passwordActions}>
