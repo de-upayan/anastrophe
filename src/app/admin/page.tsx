@@ -146,6 +146,10 @@ export default function AdminPage() {
       showToast('Please wait for the PNG preview to finish rendering...');
       return;
     }
+    if (!password || !password.trim()) {
+      showToast('Please enter a password to secure the downloadable assets.');
+      return;
+    }
 
     // Start upload progress animation
     setIsUploading(true);
@@ -705,7 +709,7 @@ export default function AdminPage() {
                 </div>
 
                 <div className={styles.formGroup}>
-                  <label htmlFor="password">Download password (optional)</label>
+                  <label htmlFor="password">Download Password <span style={{ color: '#ff6b6b' }}>*</span></label>
                   <div className={styles.passwordInputWrapper}>
                     <input 
                       type="text" 

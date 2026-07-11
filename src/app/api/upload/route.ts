@@ -15,9 +15,9 @@ export async function POST(request: Request) {
     const previewFile = formData.get('previewFile') as File | null;
     const timelapseFile = formData.get('timelapseFile') as File | null;
 
-    if (!title || !vectorFile || !previewFile) {
+    if (!title || !vectorFile || !previewFile || !password) {
       return NextResponse.json(
-        { success: false, error: 'Missing title, vector file, or preview image' },
+        { success: false, error: 'Missing title, vector file, preview image, or password' },
         { status: 400 }
       );
     }
