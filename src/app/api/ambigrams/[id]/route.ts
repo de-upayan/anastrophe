@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server';
 import { getAmbigramById, deleteAmbigram, incrementViews, incrementDownloads } from '@/lib/db';
 import crypto from 'crypto';
+import fs from 'fs/promises';
+import path from 'path';
 
 export async function GET(
   request: Request,
@@ -70,10 +72,31 @@ export async function DELETE(
   try {
     const { id } = await params;
     
-    // Perform metadata-only deletion from JSON database
+    // 1. Fetch metadata entry to identify files
+    const ambigram = await getAmbigramById(id);
+    
+    if (ambigram) {
+      const deleteLocalFile = async (srcPath: string | undefined) => {
+        if (srcPath && srcPath.startsWith('/uploads/')) {
+          try {
+            const fullPath = path.join(process.cwd(), 'public', srcPath);
+            await fs.unlink(fullPath);
+          } catch (err) {
+            console.warn(`Could not delete file ${srcPath} from disk:`, err);
+          }
+        }
+      };
+
+      // 2. Clean up associated files from the local directory
+      await deleteLocalFile(ambigram.imageSrc);
+      await deleteLocalFile(ambigram.vectorSrc);
+      await deleteLocalFile(ambigram.timelapseSrc);
+    }
+    
+    // 3. Perform deletion from JSON database
     await deleteAmbigram(id);
 
-    return NextResponse.json({ success: true, message: 'Ambigram metadata deleted' });
+    return NextResponse.json({ success: true, message: 'Ambigram and its files deleted' });
   } catch (error) {
     console.error('Error deleting ambigram:', error);
     const errorMsg = error instanceof Error ? error.message : 'Internal Server Error';
