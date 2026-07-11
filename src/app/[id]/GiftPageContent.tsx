@@ -177,7 +177,7 @@ export default function GiftPageContent({ initialItem }: GiftPageContentProps) {
 
       // 4. Bundle SVG and Video into ZIP in memory
       const zip = new JSZip();
-      const baseName = initialItem.title || 'ambigram';
+      const baseName = initialItem.id;
       zip.file(`${baseName}.svg`, svgContent);
       if (videoBlob) {
         zip.file(`${baseName}_timelapse.mp4`, videoBlob);
