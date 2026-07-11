@@ -44,7 +44,8 @@ export default function AdminPage() {
   };
 
   // File states
-  const [vectorFile, setVectorFile] = useState<File | null>(null);
+  const [vectorFile, setVectorFile] = useState<File | null>(null); // Raw SVG file
+  const [previewFile, setPreviewFile] = useState<Blob | null>(null); // Rendered PNG preview
   const [timelapseFile, setTimelapseFile] = useState<File | null>(null);
 
   // Upload simulation states
@@ -70,10 +71,19 @@ export default function AdminPage() {
     timelapseInputRef.current?.click();
   };
 
-  const handleVectorChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleVectorChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
       setVectorFile(file);
+      showToast('Generating high-resolution PNG preview locally...');
+      try {
+        const pngBlob = await renderSVGToPNG(file);
+        setPreviewFile(pngBlob);
+        showToast('PNG preview generated successfully.');
+      } catch (err) {
+        console.error('Error generating PNG preview:', err);
+        showToast('Failed to generate PNG preview.');
+      }
     }
   };
 
@@ -81,6 +91,13 @@ export default function AdminPage() {
     const file = e.target.files?.[0];
     if (file) {
       setTimelapseFile(file);
+    }
+  };
+
+  const handleZipChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setZipFile(file);
     }
   };
 
@@ -123,7 +140,11 @@ export default function AdminPage() {
 
   const handleUploadSubmit = async () => {
     if (!vectorFile) {
-      showToast('Please select a vector artwork file (.svg)');
+      showToast('Please select a raw vector artwork file (.svg)');
+      return;
+    }
+    if (!previewFile) {
+      showToast('Please wait for the PNG preview to finish rendering...');
       return;
     }
 
@@ -133,6 +154,7 @@ export default function AdminPage() {
     setShowResult(false);
 
     const linkTitle = recipient ? `Link for ${recipient}` : 'Ambigram Link';
+    const id = linkTitle.toLowerCase().trim().replace(/\s+/g, '-').replace(/[^a-z0-9\-]/g, '');
 
     // Prepare files
     const formData = new FormData();
@@ -140,7 +162,8 @@ export default function AdminPage() {
     if (recipient) formData.append('recipient', recipient);
     if (description) formData.append('description', description);
     if (password) formData.append('password', password);
-    formData.append('vectorFile', vectorFile);
+    formData.append('vectorFile', vectorFile); // sends raw SVG file
+    formData.append('previewFile', previewFile, `${id}.png`); // sends PNG preview blob
     if (timelapseFile) formData.append('timelapseFile', timelapseFile);
 
     // Increment progress bar to simulate uploading action
@@ -175,6 +198,7 @@ export default function AdminPage() {
           setPassword('');
           setDescription('');
           setVectorFile(null);
+          setPreviewFile(null);
           setTimelapseFile(null);
 
           // Auto-switch to analytics tab to show the new item in the list
@@ -729,9 +753,9 @@ export default function AdminPage() {
                   />
                 </div>
 
-                {/* Vector SVG input dropzone */}
+                {/* Raw Vector SVG input dropzone */}
                 <div className={styles.formGroup}>
-                  <label>Vector Artwork (.svg)</label>
+                  <label>Raw Vector Artwork (.svg)</label>
                   <input 
                     type="file" 
                     accept=".svg" 
@@ -743,7 +767,7 @@ export default function AdminPage() {
                     {vectorFile ? (
                       <span className={styles.fileSelectedText}>{vectorFile.name} Selected</span>
                     ) : (
-                      'Select or drop .svg design file'
+                      'Select or drop raw .svg drawing file'
                     )}
                   </div>
                 </div>
@@ -807,4 +831,38 @@ export default function AdminPage() {
       </div>
     </>
   );
+}
+
+// Client-Side Helper to Render SVG to PNG Blob via HTML5 Canvas
+function renderSVGToPNG(file: File, width: number = 1200): Promise<Blob> {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    const url = URL.createObjectURL(file);
+    img.onload = () => {
+      const canvas = document.createElement('canvas');
+      const w = img.naturalWidth || 800;
+      const h = img.naturalHeight || 600;
+      const aspectRatio = w / h;
+      
+      canvas.width = width;
+      canvas.height = width / aspectRatio;
+      
+      const ctx = canvas.getContext('2d');
+      if (ctx) {
+        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+        URL.revokeObjectURL(url);
+        canvas.toBlob((blob) => {
+          if (blob) {
+            resolve(blob);
+          } else {
+            reject(new Error('Canvas exporting to PNG Blob failed'));
+          }
+        }, 'image/png');
+      } else {
+        reject(new Error('Canvas 2D Context failed to initialize'));
+      }
+    };
+    img.onerror = (e) => reject(e);
+    img.src = url;
+  });
 }

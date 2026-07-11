@@ -10,6 +10,8 @@ export interface AmbigramItem {
   description?: string;
   imageSrc: string;
   timelapseSrc?: string;
+  zipSrc?: string;
+  vectorSrc?: string;
   password?: string;
   createdAt?: string;
   views?: number;

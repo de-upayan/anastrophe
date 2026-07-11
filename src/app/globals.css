@@ -49,7 +49,7 @@ body {
 
 .mandala {
   position: absolute;
-  background-image: url('/mandala.webp');
+  background-image: url('/mandala.svg');
   background-repeat: no-repeat;
   background-size: contain;
   background-position: center;

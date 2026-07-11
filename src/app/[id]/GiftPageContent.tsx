@@ -114,29 +114,75 @@ export default function GiftPageContent({ initialItem }: GiftPageContentProps) {
     }, 500);
   };
 
-  const handleVerifyPassword = () => {
+  const handleVerifyPassword = async () => {
     if (!initialItem) return;
-    const expectedPassword = initialItem.password || 'secret123';
-    
-    if (password === expectedPassword) {
-      setIsPasswordError(false);
-      closeDownload();
-      showToast('Downloading archive...');
+    setIsPasswordError(false);
+    showToast('Verifying and packaging assets...');
 
+    try {
+      // 1. Fetch the secure private SVG from download API
+      const response = await fetch(`/api/ambigrams/${initialItem.id}/download`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ password })
+      });
+
+      if (!response.ok) {
+        setIsPasswordError(true);
+        showToast('Incorrect password. Access denied.');
+        return;
+      }
+
+      const svgContent = await response.text();
+
+      // Track download analytics
       fetch(`/api/ambigrams/${initialItem.id}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ action: 'download' })
       }).catch(err => console.error('Error logging download:', err));
 
+      closeDownload();
+
+      // 2. Fetch the already-cached PNG preview image
+      const pngResponse = await fetch(initialItem.imageSrc);
+      const pngBlob = await pngResponse.blob();
+
+      // 3. Dynamically load JSZip from CDN
+      const JSZip = await new Promise<any>((resolve, reject) => {
+        if ((window as any).JSZip) {
+          resolve((window as any).JSZip);
+          return;
+        }
+        const script = document.createElement('script');
+        script.src = 'https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js';
+        script.onload = () => resolve((window as any).JSZip);
+        script.onerror = (e) => reject(e);
+        document.head.appendChild(script);
+      });
+
+      // 4. Bundle SVG and PNG into ZIP in memory
+      const zip = new JSZip();
+      const baseName = initialItem.title || 'ambigram';
+      zip.file(`${baseName}.svg`, svgContent);
+      zip.file(`${baseName}.png`, pngBlob);
+
+      const zipBlob = await zip.generateAsync({ type: 'blob' });
+      const downloadUrl = URL.createObjectURL(zipBlob);
+
+      // 5. Trigger download
       const link = document.createElement('a');
-      link.href = initialItem.imageSrc;
-      link.download = `${initialItem.title || 'ambigram'}.svg`;
+      link.href = downloadUrl;
+      link.download = `${baseName}_assets.zip`;
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
-    } else {
-      setIsPasswordError(true);
+      URL.revokeObjectURL(downloadUrl);
+
+      showToast('Assets downloaded successfully!');
+    } catch (err) {
+      console.error('Download packaging error:', err);
+      showToast('Error assembling download package.');
     }
   };
 
