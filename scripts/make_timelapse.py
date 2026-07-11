@@ -55,11 +55,11 @@ def main():
     
     # Ask for target duration
     try:
-        duration_input = input("Enter target timelapse duration in seconds (default: 12): ").strip()
-        target_duration = float(duration_input) if duration_input else 12.0
+        duration_input = input("Enter target timelapse duration in seconds (default: 20): ").strip()
+        target_duration = float(duration_input) if duration_input else 20.0
     except ValueError:
-        print("Invalid duration. Using 12.0s.")
-        target_duration = 12.0
+        print("Invalid duration. Using 20.0s.")
+        target_duration = 20.0
         
     # Get video duration
     duration = get_video_duration(input_path)
