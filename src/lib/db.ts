@@ -1,14 +1,22 @@
+import fs from 'fs/promises';
+import path from 'path';
 import { createClient } from '@supabase/supabase-js';
 import { AmbigramItem, DEFAULT_ITEMS } from './types';
 
 export type { AmbigramItem };
 export { DEFAULT_ITEMS };
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-// Securely use service role key if available for administrative write privileges, fallback to public key
-const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY!;
+const DB_PATH = path.join(process.cwd(), 'db.json');
 
-export const supabase = createClient(supabaseUrl, supabaseKey);
+// Check storage mode (defaults to 'supabase' in production/if not specified)
+const isLocal = process.env.STORAGE_MODE === 'local';
+
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || '';
+const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY || '';
+
+export const supabase = !isLocal && supabaseUrl && supabaseKey 
+  ? createClient(supabaseUrl, supabaseKey) 
+  : null;
 
 // Schema conversion: database (snake_case) <-> application (camelCase)
 function mapDbToItem(row: any): AmbigramItem {
@@ -45,8 +53,46 @@ function mapItemToDb(item: AmbigramItem) {
   };
 }
 
-// Get all ambigrams from Supabase
+// Helper to check if file exists (local DB)
+async function fileExists(filePath: string): Promise<boolean> {
+  try {
+    await fs.access(filePath);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+// Read local DB
+async function readLocalDb(): Promise<AmbigramItem[]> {
+  const exists = await fileExists(DB_PATH);
+  if (!exists) {
+    await writeLocalDb(DEFAULT_ITEMS);
+    return DEFAULT_ITEMS;
+  }
+  try {
+    const data = await fs.readFile(DB_PATH, 'utf-8');
+    return JSON.parse(data);
+  } catch (error) {
+    console.error('Error reading JSON DB file, fallback to defaults:', error);
+    return DEFAULT_ITEMS;
+  }
+}
+
+// Write local DB
+async function writeLocalDb(items: AmbigramItem[]): Promise<void> {
+  await fs.writeFile(DB_PATH, JSON.stringify(items, null, 2), 'utf-8');
+}
+
+// --- Unified Database Interface ---
+
+// Get all ambigrams
 export async function getAmbigrams(): Promise<AmbigramItem[]> {
+  if (isLocal) {
+    return readLocalDb();
+  }
+
+  if (!supabase) return [];
   try {
     const { data, error } = await supabase
       .from('ambigrams')
@@ -54,7 +100,7 @@ export async function getAmbigrams(): Promise<AmbigramItem[]> {
       .order('created_at', { ascending: false });
 
     if (error) {
-      console.error('Error fetching ambigrams from Supabase, returning empty array:', error);
+      console.error('Error fetching ambigrams from Supabase:', error);
       return [];
     }
 
@@ -65,8 +111,29 @@ export async function getAmbigrams(): Promise<AmbigramItem[]> {
   }
 }
 
-// Add or overwrite a single ambigram in Supabase
+// Add or overwrite a single ambigram
 export async function saveAmbigram(item: AmbigramItem): Promise<void> {
+  if (isLocal) {
+    const items = await readLocalDb();
+    const index = items.findIndex(x => x.id === item.id);
+    
+    const newItem = {
+      ...item,
+      views: item.views ?? 0,
+      downloads: item.downloads ?? 0,
+      createdAt: item.createdAt || new Date().toISOString()
+    };
+
+    if (index !== -1) {
+      items[index] = newItem;
+    } else {
+      items.unshift(newItem); // prepends new items
+    }
+    await writeLocalDb(items);
+    return;
+  }
+
+  if (!supabase) throw new Error('Supabase client is not initialized');
   const dbRow = mapItemToDb({
     ...item,
     views: item.views ?? 0,
@@ -84,8 +151,14 @@ export async function saveAmbigram(item: AmbigramItem): Promise<void> {
   }
 }
 
-// Get a single ambigram by ID from Supabase
+// Get a single ambigram by ID
 export async function getAmbigramById(id: string): Promise<AmbigramItem | null> {
+  if (isLocal) {
+    const items = await readLocalDb();
+    return items.find(item => item.id === id) || null;
+  }
+
+  if (!supabase) return null;
   try {
     const { data, error } = await supabase
       .from('ambigrams')
@@ -105,8 +178,16 @@ export async function getAmbigramById(id: string): Promise<AmbigramItem | null> 
   }
 }
 
-// Delete an ambigram by ID from Supabase
+// Delete an ambigram by ID
 export async function deleteAmbigram(id: string): Promise<void> {
+  if (isLocal) {
+    const items = await readLocalDb();
+    const updatedItems = items.filter(item => item.id !== id);
+    await writeLocalDb(updatedItems);
+    return;
+  }
+
+  if (!supabase) throw new Error('Supabase client is not initialized');
   const { error } = await supabase
     .from('ambigrams')
     .delete()
@@ -118,11 +199,33 @@ export async function deleteAmbigram(id: string): Promise<void> {
   }
 }
 
-// Increment views counter with telemetry logging in Supabase
+// Increment views counter with telemetry logging
 export async function incrementViews(id: string, viewerId?: string): Promise<void> {
+  if (isLocal) {
+    const items = await readLocalDb();
+    const index = items.findIndex(x => x.id === id);
+    if (index !== -1) {
+      const item = items[index];
+      if (!item.viewsLog) item.viewsLog = [];
+      
+      item.viewsLog.push({
+        timestamp: new Date().toISOString(),
+        viewerId: viewerId || 'anonymous'
+      });
+      
+      item.views = (item.views || 0) + 1;
+      
+      const limitTime = Date.now() - 8 * 24 * 60 * 60 * 1000;
+      item.viewsLog = item.viewsLog.filter(x => new Date(x.timestamp).getTime() >= limitTime);
+      
+      await writeLocalDb(items);
+    }
+    return;
+  }
+
   try {
     const item = await getAmbigramById(id);
-    if (!item) return;
+    if (!item || !supabase) return;
 
     const viewsLog = item.viewsLog || [];
     viewsLog.push({
@@ -130,7 +233,6 @@ export async function incrementViews(id: string, viewerId?: string): Promise<voi
       viewerId: viewerId || 'anonymous'
     });
 
-    // Prune views log entries older than 8 days to prevent DB bloat
     const limitTime = Date.now() - 8 * 24 * 60 * 60 * 1000;
     const prunedViewsLog = viewsLog.filter(x => new Date(x.timestamp).getTime() >= limitTime);
 
@@ -150,11 +252,33 @@ export async function incrementViews(id: string, viewerId?: string): Promise<voi
   }
 }
 
-// Increment downloads counter with telemetry logging in Supabase
+// Increment downloads counter with telemetry logging
 export async function incrementDownloads(id: string, viewerId?: string): Promise<void> {
+  if (isLocal) {
+    const items = await readLocalDb();
+    const index = items.findIndex(x => x.id === id);
+    if (index !== -1) {
+      const item = items[index];
+      if (!item.downloadsLog) item.downloadsLog = [];
+      
+      item.downloadsLog.push({
+        timestamp: new Date().toISOString(),
+        viewerId: viewerId || 'anonymous'
+      });
+      
+      item.downloads = (item.downloads || 0) + 1;
+      
+      const limitTime = Date.now() - 8 * 24 * 60 * 60 * 1000;
+      item.downloadsLog = item.downloadsLog.filter(x => new Date(x.timestamp).getTime() >= limitTime);
+      
+      await writeLocalDb(items);
+    }
+    return;
+  }
+
   try {
     const item = await getAmbigramById(id);
-    if (!item) return;
+    if (!item || !supabase) return;
 
     const downloadsLog = item.downloadsLog || [];
     downloadsLog.push({
@@ -162,7 +286,6 @@ export async function incrementDownloads(id: string, viewerId?: string): Promise
       viewerId: viewerId || 'anonymous'
     });
 
-    // Prune downloads log entries older than 8 days to prevent DB bloat
     const limitTime = Date.now() - 8 * 24 * 60 * 60 * 1000;
     const prunedDownloadsLog = downloadsLog.filter(x => new Date(x.timestamp).getTime() >= limitTime);
 
