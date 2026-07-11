@@ -84,9 +84,6 @@ interface ThemeContextType {
   setTheme: (themeId: string) => void;
   isPanelOpen: boolean;
   setIsPanelOpen: (open: boolean) => void;
-  triggerGiftReveal: () => void;
-  isGiftRevealed: boolean;
-  setIsGiftRevealed: (revealed: boolean) => void;
 }
 
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
@@ -94,7 +91,6 @@ const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const [activeTheme, setActiveTheme] = useState<ThemePreset>(THEMES[0]);
   const [isPanelOpen, setIsPanelOpen] = useState(false);
-  const [isGiftRevealed, setIsGiftRevealed] = useState(false);
 
   // Load from localStorage
   useEffect(() => {
@@ -126,6 +122,9 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     } else {
       root.classList.remove('theme-panel-open');
     }
+    return () => {
+      root.classList.remove('theme-panel-open');
+    };
   }, [isPanelOpen]);
 
   const setTheme = (themeId: string) => {
@@ -136,19 +135,12 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
-  const triggerGiftReveal = () => {
-    setIsGiftRevealed(true);
-  };
-
   return (
     <ThemeContext.Provider value={{
       activeTheme,
       setTheme,
       isPanelOpen,
-      setIsPanelOpen,
-      triggerGiftReveal,
-      isGiftRevealed,
-      setIsGiftRevealed
+      setIsPanelOpen
     }}>
       {children}
       <Suspense fallback={null}>
@@ -159,16 +151,8 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
 }
 
 function GlobalCustomizer() {
-  const { activeTheme, setTheme, isPanelOpen, setIsPanelOpen, isGiftRevealed, setIsGiftRevealed } = useTheme();
+  const { activeTheme, setTheme, isPanelOpen, setIsPanelOpen } = useTheme();
   const pathname = usePathname();
-  const isGiftPage = pathname !== '/' && pathname !== '/admin' && pathname !== '/admin/login';
-
-  // Reset gift reveal state when leaving gift page
-  useEffect(() => {
-    if (!isGiftPage) {
-      setIsGiftRevealed(false);
-    }
-  }, [pathname, isGiftPage, setIsGiftRevealed]);
 
   // Always display theme customizer toggle on all pages
   const showToggle = true;

@@ -25,7 +25,7 @@ export default async function VisitorGiftPage({ params }: { params: Promise<{ id
     }>
       {params.then(async ({ id }) => {
         const ambigram = await getAmbigramById(id);
-        return <GiftPageContent initialItem={ambigram} artId={id} />;
+        return <GiftPageContent initialItem={ambigram} />;
       })}
     </Suspense>
   );

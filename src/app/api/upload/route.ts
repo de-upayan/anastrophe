@@ -72,10 +72,11 @@ export async function POST(request: Request) {
       generatedLink
     });
 
-  } catch (error: any) {
+  } catch (error) {
     console.error('Error handling design upload API:', error);
+    const errorMsg = error instanceof Error ? error.message : 'Internal Server Error';
     return NextResponse.json(
-      { success: false, error: error.message || 'Internal Server Error' },
+      { success: false, error: errorMsg },
       { status: 500 }
     );
   }

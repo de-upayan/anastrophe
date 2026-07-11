@@ -18,10 +18,11 @@ export async function GET(
     }
 
     return NextResponse.json({ success: true, ambigram });
-  } catch (error: any) {
+  } catch (error) {
     console.error('Error fetching dynamic ambigram:', error);
+    const errorMsg = error instanceof Error ? error.message : 'Internal Server Error';
     return NextResponse.json(
-      { success: false, error: error.message || 'Internal Server Error' },
+      { success: false, error: errorMsg },
       { status: 500 }
     );
   }
@@ -52,10 +53,11 @@ export async function PATCH(
         { status: 400 }
       );
     }
-  } catch (error: any) {
+  } catch (error) {
     console.error('Error updating stats:', error);
+    const errorMsg = error instanceof Error ? error.message : 'Internal Server Error';
     return NextResponse.json(
-      { success: false, error: error.message || 'Internal Server Error' },
+      { success: false, error: errorMsg },
       { status: 500 }
     );
   }
@@ -72,10 +74,11 @@ export async function DELETE(
     await deleteAmbigram(id);
 
     return NextResponse.json({ success: true, message: 'Ambigram metadata deleted' });
-  } catch (error: any) {
+  } catch (error) {
     console.error('Error deleting ambigram:', error);
+    const errorMsg = error instanceof Error ? error.message : 'Internal Server Error';
     return NextResponse.json(
-      { success: false, error: error.message || 'Internal Server Error' },
+      { success: false, error: errorMsg },
       { status: 500 }
     );
   }

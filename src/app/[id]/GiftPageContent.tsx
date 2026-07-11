@@ -2,25 +2,21 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { useSearchParams } from 'next/navigation';
-import { useTheme } from '@/context/ThemeContext';
 import { Meddon, Eagle_Lake } from 'next/font/google';
 import IntroScreen from '@/components/IntroScreen';
 import { AmbigramItem } from '@/lib/types';
 import styles from './page.module.css';
 
-const meddon = Meddon({ weight: '400', subsets: ['latin'] });
-const eagleLake = Eagle_Lake({ weight: '400', subsets: ['latin'] });
+const meddon = Meddon({ weight: '400', subsets: ['latin'], adjustFontFallback: false });
+const eagleLake = Eagle_Lake({ weight: '400', subsets: ['latin'], adjustFontFallback: false });
 
 interface GiftPageContentProps {
   initialItem: AmbigramItem | null;
-  artId: string;
 }
 
 export default function GiftPageContent({ initialItem }: GiftPageContentProps) {
   const searchParams = useSearchParams();
   const recipientOverride = searchParams.get('recipient');
-
-  const { triggerGiftReveal } = useTheme();
 
   // Gift Overlay State
   const [isGiftOpen, setIsGiftOpen] = useState(false);
@@ -58,7 +54,6 @@ export default function GiftPageContent({ initialItem }: GiftPageContentProps) {
     if (revealParam === 'true' || timelapseParam === 'true') {
       setIsGiftOpen(true);
       setIsRevealed(true);
-      triggerGiftReveal();
     }
     if (timelapseParam === 'true') {
       setIsTimelapseOpen(true);
@@ -68,7 +63,7 @@ export default function GiftPageContent({ initialItem }: GiftPageContentProps) {
         }
       }, 500);
     }
-  }, [recipientOverride, initialItem, searchParams, triggerGiftReveal]);
+  }, [recipientOverride, initialItem, searchParams]);
 
   // Toggle modal-open class on document root to pause background animations during heavy backdrop-blurs
   useEffect(() => {
@@ -160,7 +155,6 @@ export default function GiftPageContent({ initialItem }: GiftPageContentProps) {
   const handleRevealGift = (e?: React.MouseEvent) => {
     if (e) e.stopPropagation();
     setIsRevealed(true);
-    triggerGiftReveal();
   };
 
   // If not found, display the invalid link UI (keeping behavior identical)

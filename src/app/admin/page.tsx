@@ -2,6 +2,7 @@
 
 import { useState, useRef, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import { AmbigramItem, ActivityEvent } from '@/lib/types';
 import styles from './page.module.css';
 
 export default function AdminPage() {
@@ -17,7 +18,7 @@ export default function AdminPage() {
   const [recipient, setRecipient] = useState('');
   const [password, setPassword] = useState('');
   const [description, setDescription] = useState('');
-  const [giftsList, setGiftsList] = useState<any[]>([]);
+  const [giftsList, setGiftsList] = useState<AmbigramItem[]>([]);
   const [selectedGiftFilter, setSelectedGiftFilter] = useState('all');
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
   const [visiblePasswords, setVisiblePasswords] = useState<Record<string, boolean>>({});
@@ -45,7 +46,6 @@ export default function AdminPage() {
   // File states
   const [vectorFile, setVectorFile] = useState<File | null>(null);
   const [timelapseFile, setTimelapseFile] = useState<File | null>(null);
-  const [vectorDataUrl, setVectorDataUrl] = useState<string>('');
 
   // Upload simulation states
   const [isUploading, setIsUploading] = useState(false);
@@ -74,14 +74,6 @@ export default function AdminPage() {
     const file = e.target.files?.[0];
     if (file) {
       setVectorFile(file);
-      // Read SVG as data URL to save in localStorage for local previewing
-      const reader = new FileReader();
-      reader.onload = (event) => {
-        if (event.target?.result) {
-          setVectorDataUrl(event.target.result as string);
-        }
-      };
-      reader.readAsDataURL(file);
     }
   };
 
@@ -123,8 +115,9 @@ export default function AdminPage() {
       } else {
         showToast(data.error || 'Failed to delete link');
       }
-    } catch (e: any) {
-      showToast(e.message || 'Error deleting link');
+    } catch (e) {
+      const errorMsg = e instanceof Error ? e.message : 'Error deleting link';
+      showToast(errorMsg);
     }
   };
 
@@ -194,10 +187,11 @@ export default function AdminPage() {
         }
       }, 400);
 
-    } catch (err: any) {
+    } catch (err) {
       clearInterval(progressInterval);
       setIsUploading(false);
-      showToast(err.message || 'Connection error during upload');
+      const errorMsg = err instanceof Error ? err.message : 'Connection error during upload';
+      showToast(errorMsg);
     }
   };
 
@@ -260,7 +254,7 @@ export default function AdminPage() {
       
     targetGifts.forEach((gift) => {
       if (gift.viewsLog) {
-        gift.viewsLog.forEach((event: any) => {
+        gift.viewsLog.forEach((event: ActivityEvent) => {
           const t = new Date(event.timestamp).getTime();
           if (t >= dayStart && t < dayEnd) {
             viewsCount++;
@@ -268,7 +262,7 @@ export default function AdminPage() {
         });
       }
       if (gift.downloadsLog) {
-        gift.downloadsLog.forEach((event: any) => {
+        gift.downloadsLog.forEach((event: ActivityEvent) => {
           const t = new Date(event.timestamp).getTime();
           if (t >= dayStart && t < dayEnd) {
             downloadsCount++;
@@ -342,7 +336,7 @@ export default function AdminPage() {
     const uniqueIds = new Set<string>();
     targetGifts.forEach((gift) => {
       if (gift.viewsLog) {
-        gift.viewsLog.forEach((event: any) => {
+        gift.viewsLog.forEach((event: ActivityEvent) => {
           if (event.viewerId) {
             uniqueIds.add(event.viewerId);
           }

@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { Fredericka_the_Great } from 'next/font/google';
 import styles from './page.module.css';
 
-const fredericka = Fredericka_the_Great({ weight: '400', subsets: ['latin'] });
+const fredericka = Fredericka_the_Great({ weight: '400', subsets: ['latin'], adjustFontFallback: false });
 
 export default function AdminLoginPage() {
   const router = useRouter();

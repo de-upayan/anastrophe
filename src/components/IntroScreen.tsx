@@ -6,9 +6,9 @@ import { Meddon, Eagle_Lake, Fredericka_the_Great } from 'next/font/google';
 import AnimatedLogo from '@/components/AnimatedLogo';
 import styles from './IntroScreen.module.css';
 
-const meddon = Meddon({ weight: '400', subsets: ['latin'] });
-const eagleLake = Eagle_Lake({ weight: '400', subsets: ['latin'] });
-const fredericka = Fredericka_the_Great({ weight: '400', subsets: ['latin'] });
+const meddon = Meddon({ weight: '400', subsets: ['latin'], adjustFontFallback: false });
+const eagleLake = Eagle_Lake({ weight: '400', subsets: ['latin'], adjustFontFallback: false });
+const fredericka = Fredericka_the_Great({ weight: '400', subsets: ['latin'], adjustFontFallback: false });
 
 interface IntroScreenProps {
   onProceed?: () => void;

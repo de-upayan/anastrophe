@@ -5,10 +5,11 @@ export async function GET(request: Request) {
   try {
     const ambigrams = await getAmbigrams();
     return NextResponse.json({ success: true, ambigrams });
-  } catch (error: any) {
+  } catch (error) {
     console.error('Error fetching ambigrams:', error);
+    const errorMsg = error instanceof Error ? error.message : 'Internal Server Error';
     return NextResponse.json(
-      { success: false, error: error.message || 'Internal Server Error' },
+      { success: false, error: errorMsg },
       { status: 500 }
     );
   }
