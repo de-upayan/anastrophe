@@ -39,14 +39,29 @@ export default function GiftPageContent({ initialItem }: GiftPageContentProps) {
 
   const videoRef = useRef<HTMLVideoElement>(null);
 
+  // Helper to retrieve or initialize a persistent, unique device tracking ID
+  const getOrCreateViewerId = (): string => {
+    if (typeof window === 'undefined') return 'anonymous';
+    let id = localStorage.getItem('visitor_id');
+    if (!id) {
+      id = 'visitor_' + Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+      localStorage.setItem('visitor_id', id);
+    }
+    return id;
+  };
+
   // Sync state and run analytics tracking on mount
   useEffect(() => {
     if (!initialItem) return;
 
+    const viewerId = getOrCreateViewerId();
     // Increment views counter
     fetch(`/api/ambigrams/${initialItem.id}`, {
       method: 'PATCH',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 
+        'Content-Type': 'application/json',
+        'x-viewer-id': viewerId
+      },
       body: JSON.stringify({ action: 'view' })
     }).catch(err => console.error('Error logging view:', err));
 
@@ -142,10 +157,14 @@ export default function GiftPageContent({ initialItem }: GiftPageContentProps) {
       showToast('Packaging assets...');
       const svgContent = await response.text();
 
+      const viewerId = getOrCreateViewerId();
       // Track download analytics
       fetch(`/api/ambigrams/${initialItem.id}`, {
         method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 
+          'Content-Type': 'application/json',
+          'x-viewer-id': viewerId
+        },
         body: JSON.stringify({ action: 'download' })
       }).catch(err => console.error('Error logging download:', err));
 
