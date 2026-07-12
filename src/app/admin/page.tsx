@@ -591,6 +591,7 @@ export default function AdminPage() {
                         <th>Code</th>
                         <th>Recipient</th>
                         <th style={{ textAlign: 'center' }}>Views</th>
+                        <th style={{ textAlign: 'center' }} title="Unique viewers: Lifetime total (unique device IDs) / Recent (active in the last 8 days)">Unique Views</th>
                         <th style={{ textAlign: 'center' }}>Downloads</th>
                         <th>Created</th>
                         <th>Password</th>
@@ -602,6 +603,11 @@ export default function AdminPage() {
                         const link = typeof window !== 'undefined' 
                           ? `${window.location.origin}/${gift.id}`
                           : '';
+                        const limitTime = Date.now() - 8 * 24 * 60 * 60 * 1000;
+                        const lifetimeUnique = gift.viewsLog ? new Set(gift.viewsLog.map(x => x.viewerId)).size : 0;
+                        const recentUnique = gift.viewsLog 
+                          ? new Set(gift.viewsLog.filter(x => new Date(x.timestamp).getTime() >= limitTime).map(x => x.viewerId)).size 
+                          : 0;
                         return (
                           <tr key={gift.id}>
                             <td className={styles.codeCell}>
@@ -618,6 +624,14 @@ export default function AdminPage() {
                             </td>
                             <td className={styles.numberCell} style={{ textAlign: 'center' }}>
                               {gift.views ?? 0}
+                            </td>
+                            <td className={styles.numberCell} style={{ textAlign: 'center' }} title={`${lifetimeUnique} unique visitors overall, with ${recentUnique} active in the last 8 days`}>
+                              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '2px' }}>
+                                <span>{lifetimeUnique}</span>
+                                <span style={{ fontSize: '0.75rem', color: 'rgba(255, 255, 255, 0.45)', fontWeight: 'normal' }}>
+                                  (<span style={{ fontWeight: 800, color: '#ffffff' }}>{recentUnique}</span> in 8d)
+                                </span>
+                              </div>
                             </td>
                             <td className={styles.numberCell} style={{ textAlign: 'center' }}>
                               {gift.downloads ?? 0}

@@ -1,7 +1,7 @@
 import fs from 'fs/promises';
 import path from 'path';
 import { createClient } from '@supabase/supabase-js';
-import { AmbigramItem, DEFAULT_ITEMS } from './types';
+import { AmbigramItem, DEFAULT_ITEMS, ActivityEvent } from './types';
 
 export type { AmbigramItem };
 export { DEFAULT_ITEMS };
@@ -199,6 +199,40 @@ export async function deleteAmbigram(id: string): Promise<void> {
   }
 }
 
+// Helper to prune activity logs to keep 8-day detailed history,
+// but retain exactly one entry for each unique historical viewer/downloader (lifetime stats).
+function pruneActivityLog(log: ActivityEvent[]): ActivityEvent[] {
+  const limitTime = Date.now() - 8 * 24 * 60 * 60 * 1000;
+  
+  // 1. Split into recent (last 8 days) and old (older than 8 days)
+  const recentEvents = log.filter(x => new Date(x.timestamp).getTime() >= limitTime);
+  const oldEvents = log.filter(x => new Date(x.timestamp).getTime() < limitTime);
+  
+  // 2. Identify all viewerIds in the recent events
+  const recentViewerIds = new Set(recentEvents.map(x => x.viewerId));
+  
+  // 3. Keep exactly one historical event per unique viewerId,
+  // excluding those already counted in the recent events
+  const uniqueOldEvents: ActivityEvent[] = [];
+  const seenOldViewerIds = new Set<string>();
+  
+  for (const event of oldEvents) {
+    const vId = event.viewerId || 'anonymous';
+    if (vId !== 'anonymous' && !recentViewerIds.has(vId) && !seenOldViewerIds.has(vId)) {
+      seenOldViewerIds.add(vId);
+      uniqueOldEvents.push(event);
+    }
+  }
+  
+  // Keep one anonymous record from history if present, to represent anonymous events
+  const hasOldAnonymous = oldEvents.some(x => (x.viewerId || 'anonymous') === 'anonymous');
+  if (hasOldAnonymous && !recentViewerIds.has('anonymous')) {
+    uniqueOldEvents.push({ timestamp: new Date(limitTime - 1).toISOString(), viewerId: 'anonymous' });
+  }
+  
+  return [...uniqueOldEvents, ...recentEvents];
+}
+
 // Increment views counter with telemetry logging
 export async function incrementViews(id: string, viewerId?: string): Promise<void> {
   if (isLocal) {
@@ -214,9 +248,7 @@ export async function incrementViews(id: string, viewerId?: string): Promise<voi
       });
       
       item.views = (item.views || 0) + 1;
-      
-      const limitTime = Date.now() - 8 * 24 * 60 * 60 * 1000;
-      item.viewsLog = item.viewsLog.filter(x => new Date(x.timestamp).getTime() >= limitTime);
+      item.viewsLog = pruneActivityLog(item.viewsLog);
       
       await writeLocalDb(items);
     }
@@ -233,8 +265,7 @@ export async function incrementViews(id: string, viewerId?: string): Promise<voi
       viewerId: viewerId || 'anonymous'
     });
 
-    const limitTime = Date.now() - 8 * 24 * 60 * 60 * 1000;
-    const prunedViewsLog = viewsLog.filter(x => new Date(x.timestamp).getTime() >= limitTime);
+    const prunedViewsLog = pruneActivityLog(viewsLog);
 
     const { error } = await supabase
       .from('ambigrams')
@@ -267,9 +298,7 @@ export async function incrementDownloads(id: string, viewerId?: string): Promise
       });
       
       item.downloads = (item.downloads || 0) + 1;
-      
-      const limitTime = Date.now() - 8 * 24 * 60 * 60 * 1000;
-      item.downloadsLog = item.downloadsLog.filter(x => new Date(x.timestamp).getTime() >= limitTime);
+      item.downloadsLog = pruneActivityLog(item.downloadsLog);
       
       await writeLocalDb(items);
     }
@@ -286,8 +315,7 @@ export async function incrementDownloads(id: string, viewerId?: string): Promise
       viewerId: viewerId || 'anonymous'
     });
 
-    const limitTime = Date.now() - 8 * 24 * 60 * 60 * 1000;
-    const prunedDownloadsLog = downloadsLog.filter(x => new Date(x.timestamp).getTime() >= limitTime);
+    const prunedDownloadsLog = pruneActivityLog(downloadsLog);
 
     const { error } = await supabase
       .from('ambigrams')
