@@ -3,7 +3,7 @@ import "./globals.css";
 
 export const metadata: Metadata = {
   title: "Anastrophe.",
-  description: "personalized calligraphic ambigram gifts",
+  description: "αμφιγράμματα by upayan :)",
 };
 
 import { ThemeProvider } from "@/context/ThemeContext";
